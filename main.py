@@ -1,5 +1,6 @@
-def print_hi(name):
-    print(f'Hi, {name}')
+from GUI import NineMensMorrisGUI
+from logic import NineMensMorrisGame
 
 if __name__ == '__main__':
-    print_hi('PyCharm')
+    gui = NineMensMorrisGUI()
+    gui.main_loop()
