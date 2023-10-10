@@ -23,16 +23,6 @@ BOARD_LAYOUT = [
     [(100, 700), (400, 700), (700, 700)],
 ]
 
-# Board layout
-BOARD_STATE = [
-    [0, 0, 0],
-    [0, 0, 0],
-    [0],
-    [0, 0, 0, 0, 0, 0],
-    [0],
-    [0, 0, 0],
-    [0, 0, 0],
-]
 
 class NineMensMorrisGUI:
     def __init__(self, game):
@@ -41,6 +31,7 @@ class NineMensMorrisGUI:
         pygame.display.set_caption("Nine Men's Morris")
         self.clock = pygame.time.Clock()
         self.game = game
+        self.clicked_point = None
 
     def draw_board(self):
         # Draw the board
@@ -96,21 +87,31 @@ class NineMensMorrisGUI:
                 for square in BOARD_LAYOUT:
                     for pos in square:
                         if math.sqrt((pos[0] - mouse_pos[0]) ** 2 + (pos[1] - mouse_pos[1]) ** 2) <= CIRCLE_RADIUS:
-                            print("Point hovered:", pos)
-                            pygame.draw.circle(self.screen, (200, 200, 200), pos, CIRCLE_RADIUS + 5)
+                            if self.clicked_point != pos:
+                                print("Point hovered:", pos)
+                                pygame.draw.circle(self.screen, (200, 200, 200), pos, CIRCLE_RADIUS + 5)
                         else:
-                            pygame.draw.circle(self.screen, (255, 255, 255), pos, CIRCLE_RADIUS + 5)
-                            pygame.draw.circle(self.screen, CIRCLE_COLOR, pos, CIRCLE_RADIUS)
+                            if self.clicked_point != pos:
+                                pygame.draw.circle(self.screen, (255, 255, 255), pos, CIRCLE_RADIUS + 5)
+                                pygame.draw.circle(self.screen, CIRCLE_COLOR, pos, CIRCLE_RADIUS)
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
+                    isPointClicked = False
+                    clicked_point = None
                     for square in BOARD_LAYOUT:
                         for pos in square:
                             if math.sqrt((pos[0] - mouse_pos[0]) ** 2 + (pos[1] - mouse_pos[1]) ** 2) <= CIRCLE_RADIUS:
                                 print("Point clicked:", pos)
                                 pygame.draw.circle(self.screen, (0, 255, 0), pos, CIRCLE_RADIUS + 5)
+                                isPointClicked = True
+                                clicked_point = pos
+                                break
                             else:
                                 pygame.draw.circle(self.screen, (255, 255, 255), pos, CIRCLE_RADIUS + 5)
                                 pygame.draw.circle(self.screen, CIRCLE_COLOR, pos, CIRCLE_RADIUS)
+                        if isPointClicked:
+                            self.clicked_point = clicked_point
+                            break
 
     def main_loop(self):
         # Draw the board

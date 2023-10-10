@@ -1,3 +1,15 @@
+# Board layout
+BOARD_STATE = [
+    [0, 0, 0],
+    [0, 0, 0],
+    [0],
+    [0, 0, 0, 0, 0, 0],
+    [0],
+    [0, 0, 0],
+    [0, 0, 0],
+]
+
+
 class NineMensMorrisGame:
     def __init__(self):
         self.board = [[' ' for _ in range(7)] for _ in range(7)]
