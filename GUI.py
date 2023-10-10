@@ -23,12 +23,24 @@ BOARD_LAYOUT = [
     [(100, 700), (400, 700), (700, 700)],
 ]
 
+# Board layout
+BOARD_LAYOUT_HOVER = [
+    [0, 0, 0],
+    [0, 0, 0],
+    [0],
+    [0, 0, 0, 0, 0, 0],
+    [0],
+    [0, 0, 0],
+    [0, 0, 0],
+]
+
 class NineMensMorrisGUI:
-    def __init__(self):
+    def __init__(self, game):
         # Initialize Pygame window
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         pygame.display.set_caption("Nine Men's Morris")
         self.clock = pygame.time.Clock()
+        self.game = game
 
     def draw_board(self):
         # Draw the board
@@ -75,17 +87,32 @@ class NineMensMorrisGUI:
                 pygame.draw.circle(self.screen, CIRCLE_COLOR, pos, CIRCLE_RADIUS)
 
     def handle_events(self):
+        mouse_pos = pygame.mouse.get_pos()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
+            elif event.type == pygame.MOUSEMOTION:
+                for square in BOARD_LAYOUT:
+                    for pos in square:
+                        if math.sqrt((pos[0] - mouse_pos[0]) ** 2 + (pos[1] - mouse_pos[1]) ** 2) <= CIRCLE_RADIUS:
+                            print("Point hovered:", pos)
+                            pygame.draw.circle(self.screen, (200, 200, 200), pos, CIRCLE_RADIUS + 10)
+
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:  # Left mouse button
+                    # Check for mouse click on points
+                    for square in BOARD_LAYOUT:
+                        for pos in square:
+                            if math.sqrt((pos[0] - mouse_pos[0]) ** 2 + (pos[1] - mouse_pos[1]) ** 2) <= CIRCLE_RADIUS:
+                                print("Point clicked:", pos)
 
     def main_loop(self):
         while True:
-            self.handle_events()
-
             # Draw the board
             self.draw_board()
+
+            self.handle_events()
 
             pygame.display.flip()
             self.clock.tick(60)
