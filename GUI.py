@@ -24,7 +24,7 @@ BOARD_LAYOUT = [
 ]
 
 # Board layout
-BOARD_LAYOUT_HOVER = [
+BOARD_STATE = [
     [0, 0, 0],
     [0, 0, 0],
     [0],
@@ -97,20 +97,25 @@ class NineMensMorrisGUI:
                     for pos in square:
                         if math.sqrt((pos[0] - mouse_pos[0]) ** 2 + (pos[1] - mouse_pos[1]) ** 2) <= CIRCLE_RADIUS:
                             print("Point hovered:", pos)
-                            pygame.draw.circle(self.screen, (200, 200, 200), pos, CIRCLE_RADIUS + 10)
-
+                            pygame.draw.circle(self.screen, (200, 200, 200), pos, CIRCLE_RADIUS + 5)
+                        else:
+                            pygame.draw.circle(self.screen, (255, 255, 255), pos, CIRCLE_RADIUS + 5)
+                            pygame.draw.circle(self.screen, CIRCLE_COLOR, pos, CIRCLE_RADIUS)
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 1:  # Left mouse button
-                    # Check for mouse click on points
+                if event.button == 1:
                     for square in BOARD_LAYOUT:
                         for pos in square:
                             if math.sqrt((pos[0] - mouse_pos[0]) ** 2 + (pos[1] - mouse_pos[1]) ** 2) <= CIRCLE_RADIUS:
                                 print("Point clicked:", pos)
+                                pygame.draw.circle(self.screen, (0, 255, 0), pos, CIRCLE_RADIUS + 5)
+                            else:
+                                pygame.draw.circle(self.screen, (255, 255, 255), pos, CIRCLE_RADIUS + 5)
+                                pygame.draw.circle(self.screen, CIRCLE_COLOR, pos, CIRCLE_RADIUS)
 
     def main_loop(self):
+        # Draw the board
+        self.draw_board()
         while True:
-            # Draw the board
-            self.draw_board()
 
             self.handle_events()
 
