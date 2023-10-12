@@ -9,18 +9,23 @@ class NineMensMorrisGame:
         self.counter = 0
         self.play1_counter = 0
         self.play2_counter = 0
+        self.message = constants.PLAYER1_MESSAGE
 
     def change_turn(self):
         if self.turn == constants.PLAY1:
             self.play1_counter = self.play1_counter + 1
             self.turn = constants.PLAY2
+            self.message = constants.PLAYER2_MESSAGE
         else:
             self.play2_counter = self.play2_counter + 1
             self.turn = constants.PLAY1
+            self.message = constants.PLAYER1_MESSAGE
 
         if self.play1_counter == constants.TOTAL_MENS and self.play2_counter == constants.TOTAL_MENS:
             self.set_phase(constants.PHASE2)
 
+        if self.phase == constants.PHASE2:
+            self.message = "Piece placement is done, Should implement Phase 2 code"
 
     def get_turn(self):
         return self.turn

@@ -26,13 +26,10 @@ class NineMensMorrisGUI:
         self.screen.fill((255, 255, 255))
         for x in range(len(constants.LINES)):
             pygame.draw.line(self.screen, constants.BLACK,
-                             (constants.LINES[x][0] * constants.SQUARESIZE, constants.SQUARESIZE * constants.LINES[x][1]),
-                             (constants.LINES[x][2] * constants.SQUARESIZE, constants.LINES[x][3] * constants.SQUARESIZE), 5)
-
-        # draw the message space
-        for c in range(constants.COLS):
-            pygame.draw.rect(self.screen, constants.GRAY,
-                             (c * constants.SQUARESIZE, constants.ROWS * constants.SQUARESIZE, constants.SQUARESIZE, constants.SQUARESIZE))
+                             (constants.LINES[x][0] * constants.SQUARESIZE,
+                              constants.SQUARESIZE * constants.LINES[x][1]),
+                             (constants.LINES[x][2] * constants.SQUARESIZE,
+                              constants.LINES[x][3] * constants.SQUARESIZE), 5)
 
         for r in range(constants.ROWS):
             for c in range(constants.COLS):
@@ -50,6 +47,16 @@ class NineMensMorrisGUI:
                 pygame.draw.circle(self.screen, color,
                                    (int(c * constants.SQUARESIZE + constants.SQUARESIZE / 2),
                                     int(r * constants.SQUARESIZE + constants.SQUARESIZE / 2)), radius)
+
+        # draw the message space
+        # for c in range(constants.COLS):
+        #     pygame.draw.rect(self.screen, constants.GRAY,
+        #                      (c * constants.SQUARESIZE, constants.ROWS * constants.SQUARESIZE, constants.SQUARESIZE,
+        #                       constants.SQUARESIZE))
+
+        myfont = pygame.font.SysFont("Comic Sans MS", 30)
+        label = myfont.render(self.game.message, 1, constants.BLACK)
+        self.screen.blit(label, (.5 * constants.SQUARESIZE, 7 * constants.SQUARESIZE))
 
     def handle_events(self):
         (r, c) = get_coords(pygame.mouse.get_pos())

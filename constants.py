@@ -61,8 +61,8 @@ ROWS = 7
 COLS = 7
 
 # Constants for the screen dimensions and board
-SCREEN_WIDTH = 1000
-SCREEN_HEIGHT = 1000
+SCREEN_WIDTH = 850
+SCREEN_HEIGHT = 850
 LINE_COLOR = (0, 0, 0)
 CIRCLE_COLOR = (0, 0, 0)
 CIRCLE_RADIUS = 15
@@ -75,5 +75,8 @@ GREEN = (0, 155, 0)
 BLUE = (0, 0, 155)
 GRAY = (200, 200, 200)
 
-SQUARESIZE = 110
+SQUARESIZE = 80
 TOTAL_MENS = 9
+
+PLAYER1_MESSAGE = "Player 1 (Red) turn to place piece"
+PLAYER2_MESSAGE = "Player 2 (Blue) turn to place piece"
