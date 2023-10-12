@@ -49,8 +49,12 @@ class NineMensMorrisGUI:
                                     int(r * constants.SQUARESIZE + constants.SQUARESIZE / 2)), radius)
 
         myfont = pygame.font.SysFont("Comic Sans MS", 30)
+
         label = myfont.render(self.game.message, 1, constants.BLACK)
         self.screen.blit(label, (.5 * constants.SQUARESIZE, 7 * constants.SQUARESIZE))
+
+        moveLabel = myfont.render("Move made: "+self.game.move_made, 1, constants.BLACK)
+        self.screen.blit(moveLabel, (.5 * constants.SQUARESIZE, 7.5 * constants.SQUARESIZE))
 
     def handle_events(self):
         (r, c) = get_coords(pygame.mouse.get_pos())
