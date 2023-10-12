@@ -13,7 +13,7 @@ class NineMensMorrisGame:
         self.play2_counter = 0
         self.message = constants.PLAYER1_MESSAGE
         self.move_made = ""
-        self.moves_made = []
+        self.moves_made = []  # TODO - Make it a stack, Will be useful when using undo
 
     def change_turn(self):
         if self.turn == constants.PLAY1:
@@ -39,8 +39,9 @@ class NineMensMorrisGame:
 
     def make_move(self, row, col, new_row, new_col):
         valid = self.is_move_valid(row, col, new_row, new_col, None)
-        print("clicked:", row + 1, col + 1, valid)  # Debug message, Remove it later
+        print("clicked:", row, col, valid)  # Debug message, Remove it later
         if valid:
+            print("vaild move")
             move = self.get_move(row, col)
             self.move_made = move
             self.moves_made.append(move)
@@ -88,7 +89,7 @@ class NineMensMorrisGame:
         return moves
 
     def save_game(self):
-        print("Saving moves:",self.moves_made)
+        print("Saving moves:", self.moves_made)
 
         if os.path.exists(constants.GAME_STATE_FILE):
             os.remove(constants.GAME_STATE_FILE)
