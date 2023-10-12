@@ -1,3 +1,5 @@
+import os
+
 import constants
 
 
@@ -84,6 +86,17 @@ class NineMensMorrisGame:
                         int(self.CURRENT_POSITION[r][c]) == constants.BLANK):
                     moves.append([r, c])
         return moves
+
+    def save_game(self):
+        print("Saving moves:",self.moves_made)
+
+        if os.path.exists(constants.GAME_STATE_FILE):
+            os.remove(constants.GAME_STATE_FILE)
+
+        state_file = open(constants.GAME_STATE_FILE, "w")
+        data = ",".join(self.moves_made)
+        state_file.write(data)
+        state_file.close()
 
     def is_game_over(self):
         # Logic to check if the game is over
