@@ -1,122 +1,71 @@
 import pygame
 import sys
 import math
+import constants
 
 # Initialize Pygame
 pygame.init()
 
-# Constants for the screen dimensions and board
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 800
-LINE_COLOR = (0, 0, 0)
-CIRCLE_COLOR = (0, 0, 0)
-CIRCLE_RADIUS = 10
 
-# Board layout
-BOARD_LAYOUT = [
-    [(100, 100), (400, 100), (700, 100)],
-    [(200, 200), (400, 200), (600, 200)],
-    [(400, 300)],
-    [(100, 400), (200, 400), (300, 400), (500, 400), (600, 400), (700, 400)],
-    [(400, 500)],
-    [(200, 600), (400, 600), (600, 600)],
-    [(100, 700), (400, 700), (700, 700)],
-]
+def get_coords(mouse_pos):
+    col = int(mouse_pos[0] / constants.SQUARESIZE)
+    row = int((mouse_pos[1]) / constants.SQUARESIZE)
+    return row, col
 
 
 class NineMensMorrisGUI:
     def __init__(self, game):
         # Initialize Pygame window
-        self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+        self.screen = pygame.display.set_mode((constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT))
         pygame.display.set_caption("Nine Men's Morris")
         self.clock = pygame.time.Clock()
         self.game = game
         self.clicked_point = None
 
     def draw_board(self):
-        # Draw the board
         self.screen.fill((255, 255, 255))
+        for x in range(len(constants.LINES)):
+            pygame.draw.line(self.screen, constants.BLACK,
+                             (constants.LINES[x][0] * constants.SQUARESIZE, constants.SQUARESIZE * constants.LINES[x][1]),
+                             (constants.LINES[x][2] * constants.SQUARESIZE, constants.LINES[x][3] * constants.SQUARESIZE), 5)
 
-        # Outer lines
-        pygame.draw.line(self.screen, LINE_COLOR, BOARD_LAYOUT[0][0], BOARD_LAYOUT[0][2], 5)
-        pygame.draw.line(self.screen, LINE_COLOR, BOARD_LAYOUT[6][0], BOARD_LAYOUT[6][2], 5)
+        # draw the message space
+        for c in range(constants.COLS):
+            pygame.draw.rect(self.screen, constants.GRAY,
+                             (c * constants.SQUARESIZE, constants.ROWS * constants.SQUARESIZE, constants.SQUARESIZE, constants.SQUARESIZE))
 
-        pygame.draw.line(self.screen, LINE_COLOR, BOARD_LAYOUT[0][0], BOARD_LAYOUT[6][0], 5)
-        pygame.draw.line(self.screen, LINE_COLOR, BOARD_LAYOUT[0][2], BOARD_LAYOUT[6][2], 5)
+        for r in range(constants.ROWS):
+            for c in range(constants.COLS):
+                radius = constants.CIRCLE_RADIUS
+                color = constants.CIRCLE_COLOR
+                if int(constants.CURRENT_POSITION[r][c]) == constants.PLAY1:
+                    (color, radius) = (constants.RED, radius)
+                elif int(constants.CURRENT_POSITION[r][c]) == constants.PLAY2:
+                    (color, radius) = (constants.GRAY, radius)
+                elif int(constants.VALID_POSITIONS[r][c] == constants.VALID):
+                    radius = int(constants.CIRCLE_RADIUS / 2)
+                else:
+                    radius = 0
 
-        # Middle lines
-        pygame.draw.line(self.screen, LINE_COLOR, BOARD_LAYOUT[1][0], BOARD_LAYOUT[1][2], 5)
-        pygame.draw.line(self.screen, LINE_COLOR, BOARD_LAYOUT[5][0], BOARD_LAYOUT[5][2], 5)
-
-        pygame.draw.line(self.screen, LINE_COLOR, BOARD_LAYOUT[1][0], BOARD_LAYOUT[5][0], 5)
-        pygame.draw.line(self.screen, LINE_COLOR, BOARD_LAYOUT[1][2], BOARD_LAYOUT[5][2], 5)
-
-        # Inside lines
-        pygame.draw.line(self.screen, LINE_COLOR, BOARD_LAYOUT[2][0],(500,300), 5)
-        pygame.draw.line(self.screen, LINE_COLOR,(300,300), BOARD_LAYOUT[2][0],5)
-
-        pygame.draw.line(self.screen, LINE_COLOR, BOARD_LAYOUT[4][0],(500,500), 5)
-        pygame.draw.line(self.screen, LINE_COLOR,(300,500), BOARD_LAYOUT[4][0],5)
-
-        pygame.draw.line(self.screen, LINE_COLOR,(300,300), BOARD_LAYOUT[3][2],5)
-        pygame.draw.line(self.screen, LINE_COLOR, BOARD_LAYOUT[3][2],(300,500), 5)
-
-        pygame.draw.line(self.screen, LINE_COLOR,(500,300), BOARD_LAYOUT[3][3],5)
-        pygame.draw.line(self.screen, LINE_COLOR, BOARD_LAYOUT[3][3],(500,500), 5)
-
-        # horizontal lines
-        pygame.draw.line(self.screen, LINE_COLOR, BOARD_LAYOUT[3][0],BOARD_LAYOUT[3][2], 5)
-        pygame.draw.line(self.screen, LINE_COLOR, BOARD_LAYOUT[3][3],BOARD_LAYOUT[3][5], 5)
-
-        # Vertical lines
-        pygame.draw.line(self.screen, LINE_COLOR, BOARD_LAYOUT[0][1],BOARD_LAYOUT[2][0], 5)
-        pygame.draw.line(self.screen, LINE_COLOR, BOARD_LAYOUT[4][0],BOARD_LAYOUT[6][1], 5)
-
-        # Draw circles for the positions
-        for row in BOARD_LAYOUT:
-            for pos in row:
-                pygame.draw.circle(self.screen, CIRCLE_COLOR, pos, CIRCLE_RADIUS)
+                pygame.draw.circle(self.screen, color,
+                                   (int(c * constants.SQUARESIZE + constants.SQUARESIZE / 2),
+                                    int(r * constants.SQUARESIZE + constants.SQUARESIZE / 2)), radius)
 
     def handle_events(self):
-        mouse_pos = pygame.mouse.get_pos()
+        (r, c) = get_coords(pygame.mouse.get_pos())
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
             elif event.type == pygame.MOUSEMOTION:
-                for square in BOARD_LAYOUT:
-                    for pos in square:
-                        if math.sqrt((pos[0] - mouse_pos[0]) ** 2 + (pos[1] - mouse_pos[1]) ** 2) <= CIRCLE_RADIUS:
-                            if self.clicked_point != pos:
-                                print("Point hovered:", pos)
-                                pygame.draw.circle(self.screen, (200, 200, 200), pos, CIRCLE_RADIUS + 5)
-                        else:
-                            if self.clicked_point != pos:
-                                pygame.draw.circle(self.screen, (255, 255, 255), pos, CIRCLE_RADIUS + 5)
-                                pygame.draw.circle(self.screen, CIRCLE_COLOR, pos, CIRCLE_RADIUS)
+                print("hovered")
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 1:
-                    isPointClicked = False
-                    clicked_point = None
-                    for square in BOARD_LAYOUT:
-                        for pos in square:
-                            if math.sqrt((pos[0] - mouse_pos[0]) ** 2 + (pos[1] - mouse_pos[1]) ** 2) <= CIRCLE_RADIUS:
-                                print("Point clicked:", pos)
-                                pygame.draw.circle(self.screen, (0, 255, 0), pos, CIRCLE_RADIUS + 5)
-                                isPointClicked = True
-                                clicked_point = pos
-                                break
-                            else:
-                                pygame.draw.circle(self.screen, (255, 255, 255), pos, CIRCLE_RADIUS + 5)
-                                pygame.draw.circle(self.screen, CIRCLE_COLOR, pos, CIRCLE_RADIUS)
-                        if isPointClicked:
-                            self.clicked_point = clicked_point
-                            break
+                print("clicked")
 
     def main_loop(self):
-        # Draw the board
-        self.draw_board()
         while True:
+            # Draw the board
+            self.draw_board()
 
             self.handle_events()
 
