@@ -11,6 +11,7 @@ class NineMensMorrisGame:
         self.play2_counter = 0
         self.message = constants.PLAYER1_MESSAGE
         self.move_made = ""
+        self.moves_made = []
 
     def change_turn(self):
         if self.turn == constants.PLAY1:
@@ -38,7 +39,9 @@ class NineMensMorrisGame:
         valid = self.is_move_valid(row, col, new_row, new_col, None)
         print("clicked:", row + 1, col + 1, valid)  # Debug message, Remove it later
         if valid:
-            self.move_made = self.get_move(row, col)
+            move = self.get_move(row, col)
+            self.move_made = move
+            self.moves_made.append(move)
             self.counter = self.counter + 1
             if self.phase == constants.PHASE1:
                 self.place_piece(row, col, self.get_turn())
