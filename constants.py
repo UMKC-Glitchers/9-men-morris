@@ -62,7 +62,7 @@ COLS = 7
 
 # Constants for the screen dimensions and board
 SCREEN_WIDTH = 850
-SCREEN_HEIGHT = 850
+SCREEN_HEIGHT = 700
 LINE_COLOR = (0, 0, 0)
 CIRCLE_COLOR = (0, 0, 0)
 CIRCLE_RADIUS = 15
@@ -90,3 +90,5 @@ POSITIONS = {
     5: "f",
     6: "g"
 }
+
+GAME_STATE_FILE = "game_state.txt"

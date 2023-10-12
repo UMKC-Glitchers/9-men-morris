@@ -60,6 +60,7 @@ class NineMensMorrisGUI:
         (r, c) = get_coords(pygame.mouse.get_pos())
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                self.game.save_game()
                 pygame.quit()
                 sys.exit()
             # elif event.type == pygame.MOUSEMOTION:
