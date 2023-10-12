@@ -48,12 +48,6 @@ class NineMensMorrisGUI:
                                    (int(c * constants.SQUARESIZE + constants.SQUARESIZE / 2),
                                     int(r * constants.SQUARESIZE + constants.SQUARESIZE / 2)), radius)
 
-        # draw the message space
-        # for c in range(constants.COLS):
-        #     pygame.draw.rect(self.screen, constants.GRAY,
-        #                      (c * constants.SQUARESIZE, constants.ROWS * constants.SQUARESIZE, constants.SQUARESIZE,
-        #                       constants.SQUARESIZE))
-
         myfont = pygame.font.SysFont("Comic Sans MS", 30)
         label = myfont.render(self.game.message, 1, constants.BLACK)
         self.screen.blit(label, (.5 * constants.SQUARESIZE, 7 * constants.SQUARESIZE))
