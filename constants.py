@@ -51,6 +51,11 @@ PLAY1 = 1
 PLAY2 = 2
 VALID = 3
 
+# Game Phases
+PHASE1 = 1
+PHASE2 = 2
+PHASE3 = 3
+
 # board size and pieces
 ROWS = 7
 COLS = 7
@@ -71,3 +76,5 @@ BLUE = (0, 0, 155)
 GRAY = (200, 200, 200)
 
 SQUARESIZE = 110
+
+

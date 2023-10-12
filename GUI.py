@@ -38,9 +38,9 @@ class NineMensMorrisGUI:
             for c in range(constants.COLS):
                 radius = constants.CIRCLE_RADIUS
                 color = constants.CIRCLE_COLOR
-                if int(constants.CURRENT_POSITION[r][c]) == constants.PLAY1:
+                if int(self.game.CURRENT_POSITION[r][c]) == constants.PLAY1:
                     (color, radius) = (constants.RED, radius)
-                elif int(constants.CURRENT_POSITION[r][c]) == constants.PLAY2:
+                elif int(self.game.CURRENT_POSITION[r][c]) == constants.PLAY2:
                     (color, radius) = (constants.GRAY, radius)
                 elif int(constants.VALID_POSITIONS[r][c] == constants.VALID):
                     radius = int(constants.CIRCLE_RADIUS / 2)
@@ -57,10 +57,11 @@ class NineMensMorrisGUI:
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-            elif event.type == pygame.MOUSEMOTION:
-                print("hovered")
+            # elif event.type == pygame.MOUSEMOTION:
+            #     print("hovered", r+1, c+1)
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                print("clicked")
+                valid = self.game.is_move_valid(r, c, None, None, None)
+                print("clicked", r+1, c+1, valid)
 
     def main_loop(self):
         while True:
