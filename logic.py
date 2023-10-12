@@ -16,6 +16,18 @@ class NineMensMorrisGame:
     def get_turn(self):
         return self.turn
 
+    def make_move(self, row, col, new_row, new_col):
+        valid = self.is_move_valid(row, col, new_row, new_col, None)
+        print("clicked", row + 1, col + 1, valid)  # Debug message, Remove it later
+        if valid:
+            if self.phase == constants.PHASE1:
+                self.place_piece(row, col, self.turn)
+                self.change_turn()
+            elif self.phase == constants.PHASE2:
+                pass
+            else:
+                pass
+
     def place_piece(self, row, col, player):
         self.CURRENT_POSITION[row][col] = player
 
