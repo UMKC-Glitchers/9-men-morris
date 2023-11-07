@@ -16,20 +16,29 @@ class NineMensMorrisGame:
         self.moves_made = []  # TODO - Make it a stack, Will be useful when using undo
 
     def change_turn(self):
-        if self.turn == constants.PLAY1:
-            self.play1_counter = self.play1_counter + 1
-            self.turn = constants.PLAY2
-            self.message = constants.PLAYER2_MESSAGE
+        if self.phase == constants.PHASE1:
+            if self.turn == constants.PLAY1:
+                self.play1_counter = self.play1_counter + 1
+                self.turn = constants.PLAY2
+                self.message = constants.PLAYER2_MESSAGE
+            else:
+                self.play2_counter = self.play2_counter + 1
+                self.turn = constants.PLAY1
+                self.message = constants.PLAYER1_MESSAGE
+
+            if self.play1_counter == constants.TOTAL_MENS and self.play2_counter == constants.TOTAL_MENS:
+                self.set_phase(constants.PHASE2)
+                self.message = "Pieces placed, Move pieces now\n" + constants.PLAY1_MOVE_MESSAGE
+
+        elif self.phase == constants.PHASE2:
+            if self.turn == constants.PLAY1:
+                self.turn = constants.PLAY2
+                self.message = constants.PLAY2_MOVE_MESSAGE
+            else:
+                self.turn = constants.PLAY1
+                self.message = constants.PLAY1_MOVE_MESSAGE
         else:
-            self.play2_counter = self.play2_counter + 1
-            self.turn = constants.PLAY1
-            self.message = constants.PLAYER1_MESSAGE
-
-        if self.play1_counter == constants.TOTAL_MENS and self.play2_counter == constants.TOTAL_MENS:
-            self.set_phase(constants.PHASE2)
-
-        if self.phase == constants.PHASE2:
-            self.message = "Piece placement is done, Should implement Phase 2 code"
+            self.message = "Invalid phase"
 
     def get_turn(self):
         return self.turn
@@ -50,6 +59,12 @@ class NineMensMorrisGame:
                 self.place_piece(row, col, self.get_turn())
                 self.change_turn()
             elif self.phase == constants.PHASE2:
+                self.move_piece(row, col, new_row, new_col, self.get_turn())
+                if self.is_mill(self.get_turn()):
+                    #TODO - Remove a piece from opponent
+                    self.message = "Remove a piece from opponent"
+                else:
+                    self.change_turn()
                 pass
             else:
                 pass
@@ -71,13 +86,14 @@ class NineMensMorrisGame:
         if (self.phase == constants.PHASE1) or (self.phase == constants.PHASE3):
             return [row, col] in self.get_valid_moves()
         elif self.phase == constants.PHASE2:
-            # TODO - Implement me
-            # for move in moves:
-            #     newb1 = str(move[0]) + str(move[1])
-            #     newb2 = str(new_row) + str(new_col)
-            #     if newb1 == newb2:
-            #         return 1
-            return 0
+            if self.CURRENT_POSITION[row][col] == self.get_turn():
+                if (abs(new_row - row) == 1 and abs(new_col - col) == 0) or \
+                   (abs(new_row - row) == 0 and abs(new_col - col) == 1) and \
+                   self.CURRENT_POSITION[new_row][new_col] == constants.BLANK:
+                    return True
+                if constants.VALID_POSITIONS[new_row][new_col] == constants.VALID:
+                    return True
+            return False
 
     def get_valid_moves(self):
         moves = []
@@ -104,3 +120,17 @@ class NineMensMorrisGame:
         pass
 
         # Other methods for game rules, checking for a mill, etc.
+
+    def is_mill(self, player):
+        for line in constants.LINES:
+            piece_count = 0
+            for i in range(0, len(line), 2):
+                row = int(line[i])
+                col = int(line[i + 1])
+                if self.CURRENT_POSITION[row][col] == player:
+                    piece_count += 1
+
+            if piece_count == 3:
+                return True
+
+        return False
