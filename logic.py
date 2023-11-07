@@ -26,9 +26,14 @@ class NineMensMorrisGame:
                 self.turn = constants.PLAY1
                 self.message = constants.PLAYER1_MESSAGE
 
-            if self.play1_counter == constants.TOTAL_MENS and self.play2_counter == constants.TOTAL_MENS:
+            if (
+                self.play1_counter == constants.TOTAL_MENS
+                and self.play2_counter == constants.TOTAL_MENS
+            ):
                 self.set_phase(constants.PHASE2)
-                self.message = "Pieces placed, Move pieces now\n" + constants.PLAY1_MOVE_MESSAGE
+                self.message = (
+                    "Pieces placed, Move pieces now\n" + constants.PLAY1_MOVE_MESSAGE
+                )
 
         elif self.phase == constants.PHASE2:
             if self.turn == constants.PLAY1:
@@ -61,7 +66,7 @@ class NineMensMorrisGame:
             elif self.phase == constants.PHASE2:
                 self.move_piece(row, col, new_row, new_col, self.get_turn())
                 if self.is_mill(self.get_turn()):
-                    #TODO - Remove a piece from opponent
+                    # TODO - Remove a piece from opponent
                     self.message = "Remove a piece from opponent"
                 else:
                     self.change_turn()
@@ -87,12 +92,14 @@ class NineMensMorrisGame:
             return [row, col] in self.get_valid_moves()
         elif self.phase == constants.PHASE2:
             if self.CURRENT_POSITION[row][col] == self.get_turn():
-                if (abs(new_row - row) == 1 and abs(new_col - col) == 0) or \
-                   (abs(new_row - row) == 0 and abs(new_col - col) == 1) and \
-                   self.CURRENT_POSITION[new_row][new_col] == constants.BLANK:
+                if (
+                    (abs(new_row - row) == 1 and abs(new_col - col) == 0)
+                    or (abs(new_row - row) == 0 and abs(new_col - col) == 1)
+                    and self.CURRENT_POSITION[new_row][new_col] == constants.BLANK
+                ):
                     return True
-                if constants.VALID_POSITIONS[new_row][new_col] == constants.VALID:
-                    return True
+                # if constants.VALID_POSITIONS[new_row][new_col] == constants.VALID:
+                #     return True
             return False
 
     def get_valid_moves(self):
@@ -100,7 +107,8 @@ class NineMensMorrisGame:
         for r in range(constants.ROWS):
             for c in range(constants.COLS):
                 if (int(constants.VALID_POSITIONS[r][c]) == constants.VALID) and (
-                        int(self.CURRENT_POSITION[r][c]) == constants.BLANK):
+                    int(self.CURRENT_POSITION[r][c]) == constants.BLANK
+                ):
                     moves.append([r, c])
         return moves
 
