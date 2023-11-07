@@ -48,6 +48,12 @@ class NineMensMorrisGUI:
                                    (int(c * constants.SQUARESIZE + constants.SQUARESIZE / 2),
                                     int(r * constants.SQUARESIZE + constants.SQUARESIZE / 2)), radius)
 
+
+        # Highlight the selected position
+        if self.game.move_made and self.clicked_point:
+            r, c = self.clicked_point
+            self.draw_highlight(r, c)
+        
         myfont = pygame.font.SysFont("Comic Sans MS", 30)
 
         label = myfont.render(self.game.message, 1, constants.BLACK)
@@ -66,8 +72,38 @@ class NineMensMorrisGUI:
             # elif event.type == pygame.MOUSEMOTION:
             #     print("hovered", r+1, c+1)
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                self.game.make_move(r, c, None, None)
+                if self.game.phase == constants.PHASE1:
+                    self.game.make_move(r, c, None, None)
+                elif self.game.phase == constants.PHASE2:
+                    if self.game.get_turn() == constants.PLAY1:
+                        if self.clicked_point is None:
+                            # If no piece is selected, check if the clicked point has a player's piece
+                            if self.game.CURRENT_POSITION[r][c] == constants.PLAY1:
+                                self.clicked_point = (r, c)
+                        else:
+                            # If a piece is selected, try to move it to the clicked point
+                            self.game.make_move(self.clicked_point[0], self.clicked_point[1], r, c)
+                            self.clicked_point = None
+                    elif self.game.get_turn() == constants.PLAY2:
+                        if self.clicked_point is None:
+                            # If no piece is selected, check if the clicked point has a player's piece
+                            if self.game.CURRENT_POSITION[r][c] == constants.PLAY2:
+                                self.clicked_point = (r, c)
+                        else:
+                            # If a piece is selected, try to move it to the clicked point
+                            self.game.make_move(self.clicked_point[0], self.clicked_point[1], r, c)
+                            self.clicked_point = None
 
+    def draw_highlight(self, r, c):
+        x = c * constants.SQUARESIZE + constants.SQUARESIZE / 2
+        y = r * constants.SQUARESIZE + constants.SQUARESIZE / 2
+        highlight_radius = constants.CIRCLE_RADIUS + 5  # Adjust the radius as needed for the glowing effect
+        highlight_color = constants.YELLOW
+
+        # Draw a glowing circle around the piece
+        pygame.draw.circle(self.screen, highlight_color, (int(x), int(y)), highlight_radius)
+    
+    
     def main_loop(self):
         while True:
             self.draw_board()

@@ -74,12 +74,16 @@ RED = (155, 0, 0)
 GREEN = (0, 155, 0)
 BLUE = (0, 0, 155)
 GRAY = (200, 200, 200)
+YELLOW = (255, 255, 0)
 
 SQUARESIZE = 80
 TOTAL_MENS = 9
 
 PLAYER1_MESSAGE = "Player 1 (Red) turn to place piece"
 PLAYER2_MESSAGE = "Player 2 (Blue) turn to place piece"
+
+PLAY1_MOVE_MESSAGE = "Player 1 (Red) turn to move piece"
+PLAY2_MOVE_MESSAGE = "Player 2 (Blue) turn to move piece"
 
 POSITIONS = {
     0: "a",
