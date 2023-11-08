@@ -70,8 +70,7 @@ class NineMensMorrisGame:
                     self.message = "Remove a piece from opponent"
                 else:
                     self.change_turn()
-                pass
-            else:
+            elif self.phase == constants.PHASE3:
                 pass
 
     def get_move(self, row, col):
@@ -80,9 +79,9 @@ class NineMensMorrisGame:
     def place_piece(self, row, col, player):
         self.CURRENT_POSITION[row][col] = player
 
-    def move_piece(self, start_row, start_col, end_row, end_col, player):
+    def move_piece(self, start_row, start_col, end_row, end_col):
         self.CURRENT_POSITION[start_row][start_col] = constants.BLANK
-        self.CURRENT_POSITION[end_row][end_col] = player
+        self.CURRENT_POSITION[end_row][end_col] = self.turn
 
     def remove_piece(self, row, col):
         self.CURRENT_POSITION[row][col] = constants.BLANK
