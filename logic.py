@@ -10,13 +10,20 @@ class NineMensMorrisGame:
         self.CURRENT_POSITION = constants.CURRENT_POSITION
         self.is_remove_piece = False
         self.counter = 0
-        self.max_pieces = 9
+        self.play1_pieces = constants.TOTAL_MENS
+        self.play2_pieces = constants.TOTAL_MENS
         self.play1_counter = 0
         self.play2_counter = 0
         self.message = constants.PLAYER1_MESSAGE
         self.move_made = ""
         self.moves_made = []  # TODO - Make it a stack, Will be useful when using undo
         # TODO - Store the moves in a struct to save even the type of move i.e. place, move, remove, fly
+
+    def update_pieces(self):
+        if self.turn == constants.PLAY1:
+            self.play2_pieces -= 1
+        else:
+            self.play1_pieces -= 1
 
     def change_turn(self):
         if self.phase == constants.PHASE1:
@@ -161,9 +168,9 @@ class NineMensMorrisGame:
 
     def is_game_over(self):
         # Game is finished when a player loses
-        if self.play1_counter <= 2 or not self.can_move(self.turn):
+        if self.play1_pieces <= 2 or not self.can_move(self.turn):
             return constants.PLAY2
-        elif self.play2_counter <= 2 or not self.can_move(self.turn):
+        elif self.play2_pieces <= 2 or not self.can_move(self.turn):
             return constants.PLAY1
         else:
             return None
@@ -186,10 +193,12 @@ class NineMensMorrisGame:
             return True
         return False
 
+    # Fixme - Player can remove from a mill if no other pieces are available
     def remove_piece(self, row, col, player):
         if self.CURRENT_POSITION[row][col] != player and self.CURRENT_POSITION[row][col] != constants.BLANK:
             if not self.is_mill(row, col, self.CURRENT_POSITION[row][col]):
                 self.CURRENT_POSITION[row][col] = constants.BLANK
+                self.update_pieces()
                 self.change_turn()
                 return True
 
@@ -200,7 +209,6 @@ class NineMensMorrisGame:
             return True
         return False
 
-    # Fixme - It breaks
     def is_mill(self, row, col, player):
         col_index = 0
         row_index = 0
