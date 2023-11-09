@@ -61,6 +61,12 @@ class NineMensMorrisGUI:
         moveLabel = myfont.render("Move made: " + self.game.move_made, 1, constants.BLACK)
         self.screen.blit(moveLabel, (.5 * constants.SQUARESIZE, 7.5 * constants.SQUARESIZE))
 
+        player1_pieces = myfont.render("P1:" + str(abs(self.game.play1_counter - self.game.max_pieces)), 1, constants.BLACK)
+        self.screen.blit(player1_pieces, (7.5 * constants.SQUARESIZE, .5 * constants.SQUARESIZE))
+
+        player2_pieces = myfont.render("P2:" + str(abs(self.game.play2_counter - self.game.max_pieces)), 1, constants.BLACK)
+        self.screen.blit(player2_pieces, (7.5 * constants.SQUARESIZE, .8 * constants.SQUARESIZE))
+
     def handle_events(self):
         (r, c) = get_coords(pygame.mouse.get_pos())
         for event in pygame.event.get():
@@ -68,8 +74,6 @@ class NineMensMorrisGUI:
                 self.game.save_game()
                 pygame.quit()
                 sys.exit()
-            # elif event.type == pygame.MOUSEMOTION:
-            #     print("hovered", r+1, c+1)
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if self.game.phase == constants.PHASE1:
                     self.game.make_move(r, c, None, None)

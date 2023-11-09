@@ -9,6 +9,7 @@ class NineMensMorrisGame:
         self.turn = constants.PLAY1
         self.CURRENT_POSITION = constants.CURRENT_POSITION
         self.counter = 0
+        self.max_pieces = 9
         self.play1_counter = 0
         self.play2_counter = 0
         self.message = constants.PLAYER1_MESSAGE
@@ -79,13 +80,6 @@ class NineMensMorrisGame:
     def place_piece(self, row, col, player):
         self.CURRENT_POSITION[row][col] = player
 
-    def move_piece(self, start_row, start_col, end_row, end_col):
-        self.CURRENT_POSITION[start_row][start_col] = constants.BLANK
-        self.CURRENT_POSITION[end_row][end_col] = self.turn
-
-    def remove_piece(self, row, col):
-        self.CURRENT_POSITION[row][col] = constants.BLANK
-
     def is_move_valid(self, row, col, new_row, new_col, moves):
         if (self.phase == constants.PHASE1) or (self.phase == constants.PHASE3):
             return [row, col] in self.get_valid_moves()
@@ -123,13 +117,66 @@ class NineMensMorrisGame:
         state_file.close()
 
     def is_game_over(self):
-        # Logic to check if the game is over
-        pass
+        # Game is finished when a player loses
+        if self.play1_counter <= 2 or not self.can_move(self.turn):
+            return constants.PLAY2
+        elif self.play2_counter <= 2 or not self.can_move(self.turn):
+            return constants.PLAY1
+        else:
+            return None
 
-        # Other methods for game rules, checking for a mill, etc.
+    def can_move(self, player):
+        # Check if the player can make a move
+        for start_row in range(constants.ROWS):
+            for start_col in range(constants.COLS):
+                if self.CURRENT_POSITION[start_row][start_col] == player:
+                    for end_row in range(constants.ROWS):
+                        for end_col in range(constants.COLS):
+                            if self.is_move_valid(start_row, start_col, end_row, end_col, None):
+                                return True
+        return False
+
+    def move_piece(self, start_row, start_col, end_row, end_col, player):
+        if self.is_move_valid(start_row, start_col, end_row, end_col, None):
+            self.CURRENT_POSITION[start_row][start_col] = constants.BLANK
+            self.CURRENT_POSITION[end_row][end_col] = player
+            if self.is_mill(player):
+                # Player achieved a mill, remove opponent's piece
+                self.remove_piece(player)
+            return True
+        return False
+
+    def remove_piece(self, player):
+        # Player removes one piece belonging to the opponent that does not form part of a mill
+        for row in range(constants.ROWS):
+            for col in range(constants.COLS):
+                if self.CURRENT_POSITION[row][col] != player and self.CURRENT_POSITION[row][col] != constants.BLANK:
+                    if not self.is_part_of_mill(row, col, self.CURRENT_POSITION[row][col]):
+                        self.CURRENT_POSITION[row][col] = constants.BLANK
+                        return
+
+    def fly_piece(self, start_row, start_col, end_row, end_col, player):
+        if self.is_move_valid(start_row, start_col, end_row, end_col, None):
+            self.CURRENT_POSITION[start_row][start_col] = constants.BLANK
+            self.CURRENT_POSITION[end_row][end_col] = player
+            return True
+        return False
+
+    def is_part_of_mill(self, row, col, player):
+        for line in constants.LINES:
+            if [row, col] in [(int(line[i]), int(line[i + 1])) for i in range(0, len(line), 2)]:
+                piece_count = 0
+                for i in range(0, len(line), 2):
+                    r = int(line[i])
+                    c = int(line[i + 1])
+                    if self.CURRENT_POSITION[r][c] == player:
+                        piece_count += 1
+                if piece_count == 3:
+                    return True
+        return False
 
     def is_mill(self, player):
-        for line in constants.LINES:
+        for line in constants.CURRENT_POSITION:
             piece_count = 0
             for i in range(0, len(line), 2):
                 row = int(line[i])

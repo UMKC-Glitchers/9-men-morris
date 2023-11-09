@@ -2,6 +2,7 @@ import pygame
 import sys
 import constants
 
+
 class Menu:
     def __init__(self):
         self.human_vs_computer_button_rect = None
