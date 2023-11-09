@@ -78,13 +78,14 @@ class NineMensMorrisGUI:
                 if self.game.phase == constants.PHASE1:
                     self.game.make_move(r, c, None, None)
                 elif self.game.phase == constants.PHASE2:
+                    print("points", r, c)
                     if self.game.get_turn() == constants.PLAY1:
                         if self.clicked_point is None:
                             # If no piece is selected, check if the clicked point has a player's piece
                             if self.game.CURRENT_POSITION[r][c] == constants.PLAY1:
                                 self.clicked_point = (r, c)
                         else:
-                            # If a piece is selected, try to move it to the clicked point
+                            # Check for valid point
                             self.game.make_move(self.clicked_point[0], self.clicked_point[1], r, c)
                             self.clicked_point = None
                     elif self.game.get_turn() == constants.PLAY2:
