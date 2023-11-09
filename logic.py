@@ -51,6 +51,9 @@ class NineMensMorrisGame:
         else:
             self.message = "Invalid phase"
 
+        if self.get_player_pieces() == 3:
+            self.message = self.get_player_from_const(self.get_turn()) + constants.FLY_MESSAGE
+
         # check for game over
         if self.is_game_over() is not None:
             self.message = self.get_player_from_const(self.is_game_over()) + " Wins the game!!"
@@ -63,6 +66,11 @@ class NineMensMorrisGame:
         if self.turn == constants.PLAY1:
             return constants.PLAY2
         return constants.PLAY1
+
+    def get_player_pieces(self):
+        if self.turn == constants.PLAY1:
+            return self.play1_pieces
+        return self.play2_pieces
 
     def set_phase(self, phase):
         self.phase = phase
@@ -88,19 +96,27 @@ class NineMensMorrisGame:
                 print("Is mill:", self.is_mill(row, col, self.get_turn()))
 
                 if self.is_mill(row, col, self.get_turn()):
-                    self.message = "Remove a piece from opponent"
+                    self.message = self.get_player_from_const(self.get_turn()) + ", Remove a piece from opponent"
                     self.is_remove_piece = True
                     return
 
                 self.change_turn()
             elif self.phase == constants.PHASE2:
-                self.move_piece(row, col, new_row, new_col, self.get_turn())
-                print("Is mill:", self.is_mill(new_row, new_col, self.get_turn()))
+                if self.get_player_pieces() == 3:
+                    if not self.fly_piece(row, col, new_row, new_col, self.get_turn()):
+                        return
+                    if self.is_mill(new_row, new_col, self.get_turn()):
+                        self.message = self.get_player_from_const(self.get_turn()) + ", Remove a piece from opponent"
+                        self.is_remove_piece = True
+                        return
+                else:
+                    self.move_piece(row, col, new_row, new_col, self.get_turn())
+                    print("Is mill:", self.is_mill(new_row, new_col, self.get_turn()))
 
-                if self.is_mill(new_row, new_col, self.get_turn()):
-                    self.message = "Remove a piece from opponent"
-                    self.is_remove_piece = True
-                    return
+                    if self.is_mill(new_row, new_col, self.get_turn()):
+                        self.message = self.get_player_from_const(self.get_turn()) + ", Remove a piece from opponent"
+                        self.is_remove_piece = True
+                        return
                 self.change_turn()
             elif self.phase == constants.PHASE3:
                 pass
@@ -115,49 +131,61 @@ class NineMensMorrisGame:
         if (self.phase == constants.PHASE1) or (self.phase == constants.PHASE3):
             return [row, col] in self.get_valid_moves()
         elif self.phase == constants.PHASE2:
+            if not (
+                    0 <= row < constants.ROWS
+                    and 0 <= col < constants.COLS
+                    and 0 <= new_row < constants.ROWS
+                    and 0 <= new_col < constants.COLS
+            ):
+                return False
+
             if self.CURRENT_POSITION[row][col] == self.get_turn() and self.CURRENT_POSITION[new_row][new_col] == constants.BLANK:
                 # Check the valid positions matrix, there should exist a 3 in it and a 0 in current position
                 # Can skip 0 for a complete row or column, Should handle a special case
-                if row == new_row:
-                    col_index = col
-                    if new_col > col:
-                        col_index += 1
-                        while col_index <= new_col:
-                            if constants.VALID_POSITIONS[row][col_index] == constants.VALID and self.CURRENT_POSITION[row][col_index] == constants.BLANK and col_index == new_col:
-                                return True
-                            elif constants.VALID_POSITIONS[row][col_index] == 0 and row != 3:
-                                col_index += 1
-                            else:
-                                return False
-                    else:
-                        col_index -= 1
-                        while col_index >= new_col:
-                            if constants.VALID_POSITIONS[row][col_index] == constants.VALID and self.CURRENT_POSITION[row][col_index] == constants.BLANK and col_index == new_col:
-                                return True
-                            elif constants.VALID_POSITIONS[row][col_index] == 0 and row != 3:
-                                col_index -= 1
-                            else:
-                                return False
-                if col == new_col:
-                    row_index = row
-                    if new_row > row:
-                        row_index += 1
-                        while row_index <= new_row:
-                            if constants.VALID_POSITIONS[row_index][col] == constants.VALID and self.CURRENT_POSITION[row_index][col] == constants.BLANK and row_index == new_row:
-                                return True
-                            elif constants.VALID_POSITIONS[row_index][col] == 0 and col != 3:
-                                row_index += 1
-                            else:
-                                return False
-                    else:
-                        row_index -= 1
-                        while row_index >= new_row:
-                            if constants.VALID_POSITIONS[row_index][col] == constants.VALID and self.CURRENT_POSITION[row_index][col] == constants.BLANK and row_index == new_row:
-                                return True
-                            elif constants.VALID_POSITIONS[row_index][col] == 0 and col != 3:
-                                row_index -= 1
-                            else:
-                                return False
+                if self.get_player_pieces() == 3:
+                    if self.CURRENT_POSITION[new_row][new_col] == constants.BLANK:
+                        return True
+                else:
+                    if row == new_row:
+                        col_index = col
+                        if new_col > col:
+                            col_index += 1
+                            while col_index <= new_col:
+                                if constants.VALID_POSITIONS[row][col_index] == constants.VALID and self.CURRENT_POSITION[row][col_index] == constants.BLANK and col_index == new_col:
+                                    return True
+                                elif constants.VALID_POSITIONS[row][col_index] == 0 and row != 3:
+                                    col_index += 1
+                                else:
+                                    return False
+                        else:
+                            col_index -= 1
+                            while col_index >= new_col:
+                                if constants.VALID_POSITIONS[row][col_index] == constants.VALID and self.CURRENT_POSITION[row][col_index] == constants.BLANK and col_index == new_col:
+                                    return True
+                                elif constants.VALID_POSITIONS[row][col_index] == 0 and row != 3:
+                                    col_index -= 1
+                                else:
+                                    return False
+                    if col == new_col:
+                        row_index = row
+                        if new_row > row:
+                            row_index += 1
+                            while row_index <= new_row:
+                                if constants.VALID_POSITIONS[row_index][col] == constants.VALID and self.CURRENT_POSITION[row_index][col] == constants.BLANK and row_index == new_row:
+                                    return True
+                                elif constants.VALID_POSITIONS[row_index][col] == 0 and col != 3:
+                                    row_index += 1
+                                else:
+                                    return False
+                        else:
+                            row_index -= 1
+                            while row_index >= new_row:
+                                if constants.VALID_POSITIONS[row_index][col] == constants.VALID and self.CURRENT_POSITION[row_index][col] == constants.BLANK and row_index == new_row:
+                                    return True
+                                elif constants.VALID_POSITIONS[row_index][col] == 0 and col != 3:
+                                    row_index -= 1
+                                else:
+                                    return False
 
             return False
 
@@ -190,17 +218,6 @@ class NineMensMorrisGame:
             return constants.PLAY1
         else:
             return None
-
-    # def can_move(self, player):
-    #     # Check if the player can make a move
-    #     for start_row in range(constants.ROWS):
-    #         for start_col in range(constants.COLS):
-    #             if self.CURRENT_POSITION[start_row][start_col] == player:
-    #                 for end_row in range(constants.ROWS):
-    #                     for end_col in range(constants.COLS):
-    #                         if self.is_move_valid(start_row, start_col, end_row, end_col):
-    #                             return True
-    #     return False
 
     def move_piece(self, start_row, start_col, end_row, end_col, player):
         if self.is_move_valid(start_row, start_col, end_row, end_col):

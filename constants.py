@@ -86,6 +86,8 @@ PLAYER2_MESSAGE = "Player 2 (Blue) turn to place piece"
 PLAY1_MOVE_MESSAGE = "Player 1 (Red) turn to move piece"
 PLAY2_MOVE_MESSAGE = "Player 2 (Blue) turn to move piece"
 
+FLY_MESSAGE = "You can FLY your piece"
+
 H_VS_H = 0
 H_VS_C = 1
 
