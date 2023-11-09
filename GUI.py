@@ -111,7 +111,7 @@ class NineMensMorrisGUI:
         x = c * constants.SQUARESIZE + constants.SQUARESIZE / 2
         y = r * constants.SQUARESIZE + constants.SQUARESIZE / 2
         highlight_radius = constants.CIRCLE_RADIUS + 5  # Adjust the radius as needed for the glowing effect
-        highlight_color = constants.YELLOW
+        highlight_color = constants.GRAY
 
         # Draw a glowing circle around the piece
         pygame.draw.circle(self.screen, highlight_color, (int(x), int(y)), highlight_radius)
