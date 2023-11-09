@@ -203,11 +203,22 @@ class NineMensMorrisGame:
     # Fixme - It breaks
     def is_mill(self, row, col, player):
         col_index = 0
+        row_index = 0
         piece_count = 0
+
+        if row == 3:
+            if col > 3:
+                col_index = 4
+        if col == 3:
+            if row > 3:
+                row_index = 4
+
         while col_index < constants.COLS:
             if constants.VALID_POSITIONS[row][col_index] == constants.VALID and self.CURRENT_POSITION[row][col_index] == player:
                 piece_count += 1
-            elif constants.VALID_POSITIONS[row][col_index] == 0 and (col < 3 and col_index == 3):
+            elif constants.VALID_POSITIONS[row][col_index] == constants.VALID and constants.VALID_POSITIONS[row][col_index] != player:
+                piece_count = 0
+            if row == 3 and col_index == 3:
                 break
             col_index += 1
             if piece_count == 3:
@@ -216,12 +227,13 @@ class NineMensMorrisGame:
         if piece_count == 3:
             return True
 
-        row_index = 0
         piece_count = 0
         while row_index < constants.ROWS:
             if constants.VALID_POSITIONS[row_index][col] == constants.VALID and self.CURRENT_POSITION[row_index][col] == player:
                 piece_count += 1
-            elif constants.VALID_POSITIONS[row_index][col] == 0 and (row < 3 and row_index == 3):
+            elif constants.VALID_POSITIONS[row_index][col] == constants.VALID and constants.VALID_POSITIONS[row_index][col] != player:
+                piece_count = 0
+            if row_index == 3 and col == 3:
                 return False
             row_index += 1
             if piece_count == 3:
