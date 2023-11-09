@@ -100,7 +100,7 @@ class NineMensMorrisGame:
                     if new_col > col:
                         col_index += 1
                         while col_index <= new_col:
-                            if constants.VALID_POSITIONS[row][col_index] == constants.VALID and self.CURRENT_POSITION[row][col_index] == constants.BLANK:
+                            if constants.VALID_POSITIONS[row][col_index] == constants.VALID and self.CURRENT_POSITION[row][col_index] == constants.BLANK and col_index == new_col:
                                 return True
                             elif constants.VALID_POSITIONS[row][col_index] == 0 and row != 3:
                                 col_index += 1
@@ -109,7 +109,7 @@ class NineMensMorrisGame:
                     else:
                         col_index -= 1
                         while col_index >= new_col:
-                            if constants.VALID_POSITIONS[row][col_index] == constants.VALID and self.CURRENT_POSITION[row][col_index] == constants.BLANK:
+                            if constants.VALID_POSITIONS[row][col_index] == constants.VALID and self.CURRENT_POSITION[row][col_index] == constants.BLANK and col_index == new_col:
                                 return True
                             elif constants.VALID_POSITIONS[row][col_index] == 0 and row != 3:
                                 col_index -= 1
@@ -120,7 +120,7 @@ class NineMensMorrisGame:
                     if new_row > row:
                         row_index += 1
                         while row_index <= new_row:
-                            if constants.VALID_POSITIONS[row_index][col] == constants.VALID and self.CURRENT_POSITION[row_index][col] == constants.BLANK:
+                            if constants.VALID_POSITIONS[row_index][col] == constants.VALID and self.CURRENT_POSITION[row_index][col] == constants.BLANK and row_index == new_row:
                                 return True
                             elif constants.VALID_POSITIONS[row_index][col] == 0 and col != 3:
                                 row_index += 1
@@ -129,7 +129,7 @@ class NineMensMorrisGame:
                     else:
                         row_index -= 1
                         while row_index >= new_row:
-                            if constants.VALID_POSITIONS[row_index][col] == constants.VALID and self.CURRENT_POSITION[row_index][col] == constants.BLANK:
+                            if constants.VALID_POSITIONS[row_index][col] == constants.VALID and self.CURRENT_POSITION[row_index][col] == constants.BLANK and row_index == new_row:
                                 return True
                             elif constants.VALID_POSITIONS[row_index][col] == 0 and col != 3:
                                 row_index -= 1
