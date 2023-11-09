@@ -19,9 +19,9 @@ class Menu:
                     sys.exit()
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_h:
-                        self.selected_option = 'human_vs_human'
+                        self.selected_option = constants.H_VS_H
                     elif event.key == pygame.K_c:
-                        self.selected_option = 'human_vs_computer'
+                        self.selected_option = constants.H_VS_C
 
             self.screen.fill(constants.WHITE)
             text = self.font.render("Nine Men's Morris - Menu", True, constants.BLACK)
