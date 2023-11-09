@@ -48,18 +48,17 @@ class NineMensMorrisGUI:
                                    (int(c * constants.SQUARESIZE + constants.SQUARESIZE / 2),
                                     int(r * constants.SQUARESIZE + constants.SQUARESIZE / 2)), radius)
 
-
         # Highlight the selected position
         if self.game.move_made and self.clicked_point:
             r, c = self.clicked_point
             self.draw_highlight(r, c)
-        
+
         myfont = pygame.font.SysFont("Comic Sans MS", 30)
 
         label = myfont.render(self.game.message, 1, constants.BLACK)
         self.screen.blit(label, (.5 * constants.SQUARESIZE, 7 * constants.SQUARESIZE))
 
-        moveLabel = myfont.render("Move made: "+self.game.move_made, 1, constants.BLACK)
+        moveLabel = myfont.render("Move made: " + self.game.move_made, 1, constants.BLACK)
         self.screen.blit(moveLabel, (.5 * constants.SQUARESIZE, 7.5 * constants.SQUARESIZE))
 
     def handle_events(self):
@@ -102,8 +101,7 @@ class NineMensMorrisGUI:
 
         # Draw a glowing circle around the piece
         pygame.draw.circle(self.screen, highlight_color, (int(x), int(y)), highlight_radius)
-    
-    
+
     def main_loop(self):
         while True:
             self.draw_board()
