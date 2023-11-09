@@ -8,6 +8,7 @@ if __name__ == '__main__':
     menu = Menu()
     menu.display_menu()
     selected_option = menu.get_selected_option()
+    game = None
 
     if selected_option == constants.H_VS_H:
         game = NineMensMorrisGame()
@@ -15,5 +16,6 @@ if __name__ == '__main__':
         # Initialize game for human vs computer mode
         game = NineMensMorrisGame()  # Replace with your computer player logic
 
-    gui = NineMensMorrisGUI(game)
-    gui.main_loop()
+    if game is not None:
+        gui = NineMensMorrisGUI(game)
+        gui.main_loop()
