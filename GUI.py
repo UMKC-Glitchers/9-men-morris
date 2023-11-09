@@ -61,10 +61,10 @@ class NineMensMorrisGUI:
         moveLabel = myfont.render("Move made: " + self.game.move_made, 1, constants.BLACK)
         self.screen.blit(moveLabel, (.5 * constants.SQUARESIZE, 7.5 * constants.SQUARESIZE))
 
-        player1_pieces = myfont.render("P1:" + str(abs(self.game.play1_counter - self.game.max_pieces)), 1, constants.BLACK)
+        player1_pieces = myfont.render("P1:" + str(abs(self.game.play1_counter - constants.TOTAL_MENS)), 1, constants.BLACK)
         self.screen.blit(player1_pieces, (7.5 * constants.SQUARESIZE, .5 * constants.SQUARESIZE))
 
-        player2_pieces = myfont.render("P2:" + str(abs(self.game.play2_counter - self.game.max_pieces)), 1, constants.BLACK)
+        player2_pieces = myfont.render("P2:" + str(abs(self.game.play2_counter - constants.TOTAL_MENS)), 1, constants.BLACK)
         self.screen.blit(player2_pieces, (7.5 * constants.SQUARESIZE, .8 * constants.SQUARESIZE))
 
     def handle_events(self):
@@ -75,6 +75,8 @@ class NineMensMorrisGUI:
                 pygame.quit()
                 sys.exit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
+                if self.game.over:
+                    return
                 if self.game.phase == constants.PHASE1:
                     if self.game.is_remove_piece:
                         if self.game.remove_piece(r, c, self.game.get_turn()):
@@ -109,7 +111,7 @@ class NineMensMorrisGUI:
         x = c * constants.SQUARESIZE + constants.SQUARESIZE / 2
         y = r * constants.SQUARESIZE + constants.SQUARESIZE / 2
         highlight_radius = constants.CIRCLE_RADIUS + 5  # Adjust the radius as needed for the glowing effect
-        highlight_color = constants.YELLOW
+        highlight_color = constants.GRAY
 
         # Draw a glowing circle around the piece
         pygame.draw.circle(self.screen, highlight_color, (int(x), int(y)), highlight_radius)
