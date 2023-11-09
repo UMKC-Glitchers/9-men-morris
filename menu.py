@@ -25,7 +25,8 @@ class Menu:
                     if self.human_vs_human_button_rect.collidepoint(event.pos):
                         self.selected_option = constants.H_VS_H
                     elif self.human_vs_computer_button_rect.collidepoint(event.pos):
-                        self.selected_option = constants.H_VS_C
+                        self.selected_option = None
+                        # self.selected_option = constants.H_VS_C
 
             self.screen.fill(constants.WHITE)
 
