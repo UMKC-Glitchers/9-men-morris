@@ -63,9 +63,12 @@ class NineMensMorrisGame:
             self.counter = self.counter + 1
             if self.phase == constants.PHASE1:
                 self.place_piece(row, col, self.get_turn())
+                # if mill is formed, do not change the player's turn, but ask him to remove an opponent piece
+                print("Is mill:", self.is_mill(row, col))
                 self.change_turn()
             elif self.phase == constants.PHASE2:
                 self.move_piece(row, col, new_row, new_col, self.get_turn())
+                print("Is mill:", self.is_mill(new_row, new_col))
                 # if self.is_mill(self.get_turn()):
                 #     # TODO - Remove a piece from opponent
                 #     self.message = "Remove a piece from opponent"
@@ -81,7 +84,6 @@ class NineMensMorrisGame:
         self.CURRENT_POSITION[row][col] = player
 
     def is_move_valid(self, row, col, new_row, new_col):
-        print(row, col, new_row, new_col)
         if (self.phase == constants.PHASE1) or (self.phase == constants.PHASE3):
             return [row, col] in self.get_valid_moves()
         elif self.phase == constants.PHASE2:
@@ -93,7 +95,7 @@ class NineMensMorrisGame:
                     if new_col > col:
                         col_index += 1
                         while col_index <= new_col:
-                            if constants.VALID_POSITIONS[row][col_index] == constants.VALID and constants.CURRENT_POSITION[row][col_index] == constants.BLANK:
+                            if constants.VALID_POSITIONS[row][col_index] == constants.VALID and self.CURRENT_POSITION[row][col_index] == constants.BLANK:
                                 return True
                             elif constants.VALID_POSITIONS[row][col_index] == 0 and row != 3:
                                 col_index += 1
@@ -102,7 +104,7 @@ class NineMensMorrisGame:
                     else:
                         col_index -= 1
                         while col_index >= new_col:
-                            if constants.VALID_POSITIONS[row][col_index] == constants.VALID and constants.CURRENT_POSITION[row][col_index] == constants.BLANK:
+                            if constants.VALID_POSITIONS[row][col_index] == constants.VALID and self.CURRENT_POSITION[row][col_index] == constants.BLANK:
                                 return True
                             elif constants.VALID_POSITIONS[row][col_index] == 0 and row != 3:
                                 col_index -= 1
@@ -113,7 +115,7 @@ class NineMensMorrisGame:
                     if new_row > row:
                         row_index += 1
                         while row_index <= new_row:
-                            if constants.VALID_POSITIONS[row_index][col] == constants.VALID and constants.CURRENT_POSITION[row_index][col] == constants.BLANK:
+                            if constants.VALID_POSITIONS[row_index][col] == constants.VALID and self.CURRENT_POSITION[row_index][col] == constants.BLANK:
                                 return True
                             elif constants.VALID_POSITIONS[row_index][col] == 0 and col != 3:
                                 row_index += 1
@@ -122,7 +124,7 @@ class NineMensMorrisGame:
                     else:
                         row_index -= 1
                         while row_index >= new_row:
-                            if constants.VALID_POSITIONS[row_index][col] == constants.VALID and constants.CURRENT_POSITION[row_index][col] == constants.BLANK:
+                            if constants.VALID_POSITIONS[row_index][col] == constants.VALID and self.CURRENT_POSITION[row_index][col] == constants.BLANK:
                                 return True
                             elif constants.VALID_POSITIONS[row_index][col] == 0 and col != 3:
                                 row_index -= 1
@@ -195,6 +197,7 @@ class NineMensMorrisGame:
             return True
         return False
 
+    # Update this
     def is_part_of_mill(self, row, col, player):
         for line in constants.LINES:
             if [row, col] in [(int(line[i]), int(line[i + 1])) for i in range(0, len(line), 2)]:
@@ -208,16 +211,32 @@ class NineMensMorrisGame:
                     return True
         return False
 
-    def is_mill(self, player):
-        for line in constants.CURRENT_POSITION:
-            piece_count = 0
-            for i in range(0, len(line), 2):
-                row = int(line[i])
-                col = int(line[i + 1])
-                if self.CURRENT_POSITION[row][col] == player:
-                    piece_count += 1
-
+    def is_mill(self, row, col):
+        col_index = 0
+        piece_count = 0
+        while col_index <= constants.COLS:
+            if constants.VALID_POSITIONS[row][col_index] == constants.VALID and self.CURRENT_POSITION[row][col_index] == self.turn:
+                piece_count += 1
+            elif constants.VALID_POSITIONS[row][col_index] == 0 and (col < col_index == 3):
+                return False
+            col_index += 1
             if piece_count == 3:
                 return True
 
+        if piece_count == 3:
+            return True
+
+        row_index = 0
+        piece_count = 0
+        while row_index <= constants.ROWS:
+            if constants.VALID_POSITIONS[row_index][col] == constants.VALID and self.CURRENT_POSITION[row_index][col] == self.turn:
+                piece_count += 1
+            elif constants.VALID_POSITIONS[row_index][col] == 0 and (row < row_index == 3):
+                return False
+            row_index += 1
+            if piece_count == 3:
+                return True
+
+        if piece_count == 3:
+            return True
         return False
