@@ -75,6 +75,8 @@ class NineMensMorrisGUI:
                 pygame.quit()
                 sys.exit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
+                if self.game.over:
+                    return
                 if self.game.phase == constants.PHASE1:
                     if self.game.is_remove_piece:
                         if self.game.remove_piece(r, c, self.game.get_turn()):

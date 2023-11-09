@@ -16,6 +16,7 @@ class NineMensMorrisGame:
         self.play2_counter = 0
         self.message = constants.PLAYER1_MESSAGE
         self.move_made = ""
+        self.over = False
         self.moves_made = []  # TODO - Make it a stack, Will be useful when using undo
         # TODO - Store the moves in a struct to save even the type of move i.e. place, move, remove, fly
 
@@ -50,11 +51,26 @@ class NineMensMorrisGame:
         else:
             self.message = "Invalid phase"
 
+        # check for game over
+        if self.is_game_over() is not None:
+            self.message = self.get_player_from_const(self.is_game_over()) + " Wins the game!!"
+            self.over = True
+
     def get_turn(self):
         return self.turn
 
+    def get_opp(self):
+        if self.turn == constants.PLAY1:
+            return constants.PLAY2
+        return constants.PLAY1
+
     def set_phase(self, phase):
         self.phase = phase
+
+    def get_player_from_const(self, player):
+        if player == constants.PLAY1:
+            return "Player 1"
+        return "Player 2"
 
     def make_move(self, row, col, new_row, new_col):
         valid = self.is_move_valid(row, col, new_row, new_col)
@@ -168,23 +184,23 @@ class NineMensMorrisGame:
 
     def is_game_over(self):
         # Game is finished when a player loses
-        if self.play1_pieces <= 2 or not self.can_move(self.turn):
+        if self.play1_pieces <= 2:
             return constants.PLAY2
-        elif self.play2_pieces <= 2 or not self.can_move(self.turn):
+        elif self.play2_pieces <= 2:
             return constants.PLAY1
         else:
             return None
 
-    def can_move(self, player):
-        # Check if the player can make a move
-        for start_row in range(constants.ROWS):
-            for start_col in range(constants.COLS):
-                if self.CURRENT_POSITION[start_row][start_col] == player:
-                    for end_row in range(constants.ROWS):
-                        for end_col in range(constants.COLS):
-                            if self.is_move_valid(start_row, start_col, end_row, end_col):
-                                return True
-        return False
+    # def can_move(self, player):
+    #     # Check if the player can make a move
+    #     for start_row in range(constants.ROWS):
+    #         for start_col in range(constants.COLS):
+    #             if self.CURRENT_POSITION[start_row][start_col] == player:
+    #                 for end_row in range(constants.ROWS):
+    #                     for end_col in range(constants.COLS):
+    #                         if self.is_move_valid(start_row, start_col, end_row, end_col):
+    #                             return True
+    #     return False
 
     def move_piece(self, start_row, start_col, end_row, end_col, player):
         if self.is_move_valid(start_row, start_col, end_row, end_col):
@@ -197,6 +213,11 @@ class NineMensMorrisGame:
     def remove_piece(self, row, col, player):
         if self.CURRENT_POSITION[row][col] != player and self.CURRENT_POSITION[row][col] != constants.BLANK:
             if not self.is_mill(row, col, self.CURRENT_POSITION[row][col]):
+                self.CURRENT_POSITION[row][col] = constants.BLANK
+                self.update_pieces()
+                self.change_turn()
+                return True
+            if self.is_mill(row, col, self.CURRENT_POSITION[row][col]) and not self.has_free_pieces():
                 self.CURRENT_POSITION[row][col] = constants.BLANK
                 self.update_pieces()
                 self.change_turn()
@@ -250,3 +271,34 @@ class NineMensMorrisGame:
         if piece_count == 3:
             return True
         return False
+
+    def has_free_pieces(self):
+        for r in range(constants.ROWS):
+            for c in range(constants.COLS):
+                if self.CURRENT_POSITION[r][c] == self.get_opp() and not self.is_mill_at_position(r, c):
+                    return True  # Found a free piece belonging to the player
+        return False
+
+    def is_mill_at_position(self, row, col):
+        player = self.CURRENT_POSITION[row][col]
+        if player == constants.BLANK:
+            return False  # No mill possible if the position is empty
+
+        # Check horizontal and vertical lines
+        if self.check_line(row, col, 0, 1, player) or self.check_line(row, col, 1, 0, player):
+            return True
+
+        # Check diagonal lines
+        if self.check_line(row, col, 1, 1, player) or self.check_line(row, col, 1, -1, player):
+            return True
+
+        return False
+
+    def check_line(self, row, col, dr, dc, player):
+        for i in range(1, 3):  # Check up to 2 positions in the line
+            r, c = row + i * dr, col + i * dc
+            if 0 <= r < constants.ROWS and 0 <= c < constants.COLS and self.CURRENT_POSITION[r][c] != player:
+                return False  # The line is not valid if there is an opponent's piece
+            elif 0 <= r < constants.ROWS and 0 <= c < constants.COLS and self.CURRENT_POSITION[r][c] == constants.BLANK:
+                return False  # The line is not valid if there is a blank space
+        return True  # The line is valid (contains only player's pieces)
