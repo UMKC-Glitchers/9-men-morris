@@ -76,7 +76,11 @@ class NineMensMorrisGUI:
                 sys.exit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if self.game.phase == constants.PHASE1:
-                    self.game.make_move(r, c, None, None)
+                    if self.game.is_remove_piece:
+                        if self.game.remove_piece(r, c, self.game.get_turn()):
+                            self.game.is_remove_piece = False
+                    else:
+                        self.game.make_move(r, c, None, None)
                 elif self.game.phase == constants.PHASE2:
                     print("points", r, c)
                     if self.game.get_turn() == constants.PLAY1:
