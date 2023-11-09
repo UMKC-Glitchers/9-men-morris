@@ -8,6 +8,7 @@ class NineMensMorrisGame:
         self.phase = constants.PHASE1
         self.turn = constants.PLAY1
         self.CURRENT_POSITION = constants.CURRENT_POSITION
+        self.is_remove_piece = False
         self.counter = 0
         self.max_pieces = 9
         self.play1_counter = 0
@@ -15,6 +16,7 @@ class NineMensMorrisGame:
         self.message = constants.PLAYER1_MESSAGE
         self.move_made = ""
         self.moves_made = []  # TODO - Make it a stack, Will be useful when using undo
+        # TODO - Store the moves in a struct to save even the type of move i.e. place, move, remove, fly
 
     def change_turn(self):
         if self.phase == constants.PHASE1:
@@ -27,14 +29,9 @@ class NineMensMorrisGame:
                 self.turn = constants.PLAY1
                 self.message = constants.PLAYER1_MESSAGE
 
-            if (
-                self.play1_counter == constants.TOTAL_MENS
-                and self.play2_counter == constants.TOTAL_MENS
-            ):
+            if self.play1_counter == constants.TOTAL_MENS and self.play2_counter == constants.TOTAL_MENS:
                 self.set_phase(constants.PHASE2)
-                self.message = (
-                    "Pieces placed, Move pieces now\n" + constants.PLAY1_MOVE_MESSAGE
-                )
+                self.message = ("Pieces placed, Move pieces now\n" + constants.PLAY1_MOVE_MESSAGE)
 
         elif self.phase == constants.PHASE2:
             if self.turn == constants.PLAY1:
@@ -63,16 +60,24 @@ class NineMensMorrisGame:
             self.counter = self.counter + 1
             if self.phase == constants.PHASE1:
                 self.place_piece(row, col, self.get_turn())
+
                 # if mill is formed, do not change the player's turn, but ask him to remove an opponent piece
-                print("Is mill:", self.is_mill(row, col))
+                print("Is mill:", self.is_mill(row, col, self.get_turn()))
+
+                if self.is_mill(row, col, self.get_turn()):
+                    self.message = "Remove a piece from opponent"
+                    self.is_remove_piece = True
+                    return
+
                 self.change_turn()
             elif self.phase == constants.PHASE2:
                 self.move_piece(row, col, new_row, new_col, self.get_turn())
-                print("Is mill:", self.is_mill(new_row, new_col))
-                # if self.is_mill(self.get_turn()):
-                #     # TODO - Remove a piece from opponent
-                #     self.message = "Remove a piece from opponent"
-                # else:
+                print("Is mill:", self.is_mill(new_row, new_col, self.get_turn()))
+
+                if self.is_mill(new_row, new_col, self.get_turn()):
+                    self.message = "Remove a piece from opponent"
+                    self.is_remove_piece = True
+                    return
                 self.change_turn()
             elif self.phase == constants.PHASE3:
                 pass
@@ -181,14 +186,11 @@ class NineMensMorrisGame:
             return True
         return False
 
-    def remove_piece(self, player):
-        # Player removes one piece belonging to the opponent that does not form part of a mill
-        for row in range(constants.ROWS):
-            for col in range(constants.COLS):
-                if self.CURRENT_POSITION[row][col] != player and self.CURRENT_POSITION[row][col] != constants.BLANK:
-                    if not self.is_part_of_mill(row, col, self.CURRENT_POSITION[row][col]):
-                        self.CURRENT_POSITION[row][col] = constants.BLANK
-                        return
+    def remove_piece(self, row, col, player):
+        if self.CURRENT_POSITION[row][col] != player and self.CURRENT_POSITION[row][col] != constants.BLANK:
+            if not self.is_mill(row, col, self.CURRENT_POSITION[row][col]):
+                self.CURRENT_POSITION[row][col] = constants.BLANK
+                return True
 
     def fly_piece(self, start_row, start_col, end_row, end_col, player):
         if self.is_move_valid(start_row, start_col, end_row, end_col):
@@ -197,25 +199,11 @@ class NineMensMorrisGame:
             return True
         return False
 
-    # Update this
-    def is_part_of_mill(self, row, col, player):
-        for line in constants.LINES:
-            if [row, col] in [(int(line[i]), int(line[i + 1])) for i in range(0, len(line), 2)]:
-                piece_count = 0
-                for i in range(0, len(line), 2):
-                    r = int(line[i])
-                    c = int(line[i + 1])
-                    if self.CURRENT_POSITION[r][c] == player:
-                        piece_count += 1
-                if piece_count == 3:
-                    return True
-        return False
-
-    def is_mill(self, row, col):
+    def is_mill(self, row, col, player):
         col_index = 0
         piece_count = 0
-        while col_index <= constants.COLS:
-            if constants.VALID_POSITIONS[row][col_index] == constants.VALID and self.CURRENT_POSITION[row][col_index] == self.turn:
+        while col_index < constants.COLS:
+            if constants.VALID_POSITIONS[row][col_index] == constants.VALID and self.CURRENT_POSITION[row][col_index] == player:
                 piece_count += 1
             elif constants.VALID_POSITIONS[row][col_index] == 0 and (col < col_index == 3):
                 return False
@@ -228,8 +216,8 @@ class NineMensMorrisGame:
 
         row_index = 0
         piece_count = 0
-        while row_index <= constants.ROWS:
-            if constants.VALID_POSITIONS[row_index][col] == constants.VALID and self.CURRENT_POSITION[row_index][col] == self.turn:
+        while row_index < constants.ROWS:
+            if constants.VALID_POSITIONS[row_index][col] == constants.VALID and self.CURRENT_POSITION[row_index][col] == player:
                 piece_count += 1
             elif constants.VALID_POSITIONS[row_index][col] == 0 and (row < row_index == 3):
                 return False
