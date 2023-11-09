@@ -190,6 +190,7 @@ class NineMensMorrisGame:
         if self.CURRENT_POSITION[row][col] != player and self.CURRENT_POSITION[row][col] != constants.BLANK:
             if not self.is_mill(row, col, self.CURRENT_POSITION[row][col]):
                 self.CURRENT_POSITION[row][col] = constants.BLANK
+                self.change_turn()
                 return True
 
     def fly_piece(self, start_row, start_col, end_row, end_col, player):
@@ -199,6 +200,7 @@ class NineMensMorrisGame:
             return True
         return False
 
+    # Fixme - It breaks
     def is_mill(self, row, col, player):
         col_index = 0
         piece_count = 0
@@ -206,7 +208,7 @@ class NineMensMorrisGame:
             if constants.VALID_POSITIONS[row][col_index] == constants.VALID and self.CURRENT_POSITION[row][col_index] == player:
                 piece_count += 1
             elif constants.VALID_POSITIONS[row][col_index] == 0 and (col < col_index == 3):
-                return False
+                break
             col_index += 1
             if piece_count == 3:
                 return True
