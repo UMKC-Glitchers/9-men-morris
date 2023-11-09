@@ -207,7 +207,7 @@ class NineMensMorrisGame:
         while col_index < constants.COLS:
             if constants.VALID_POSITIONS[row][col_index] == constants.VALID and self.CURRENT_POSITION[row][col_index] == player:
                 piece_count += 1
-            elif constants.VALID_POSITIONS[row][col_index] == 0 and (col < col_index == 3):
+            elif constants.VALID_POSITIONS[row][col_index] == 0 and (col < 3 and col_index == 3):
                 break
             col_index += 1
             if piece_count == 3:
@@ -221,7 +221,7 @@ class NineMensMorrisGame:
         while row_index < constants.ROWS:
             if constants.VALID_POSITIONS[row_index][col] == constants.VALID and self.CURRENT_POSITION[row_index][col] == player:
                 piece_count += 1
-            elif constants.VALID_POSITIONS[row_index][col] == 0 and (row < row_index == 3):
+            elif constants.VALID_POSITIONS[row_index][col] == 0 and (row < 3 and row_index == 3):
                 return False
             row_index += 1
             if piece_count == 3:
