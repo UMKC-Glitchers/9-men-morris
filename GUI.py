@@ -79,14 +79,38 @@ class NineMensMorrisGUI:
                     return
                 if self.game.phase == constants.PHASE1:
                     if self.game.is_remove_piece:
-                        if self.game.remove_piece(r, c, self.game.get_turn()):
+                        player = self.game.get_turn()
+                        if self.game.remove_piece(r, c, player):
+                            move_history = {
+                                "type": constants.REMOVE_PIECE,
+                                "player": self.game.get_turn(),
+                                "move": self.game.get_move(r,c),
+                                "row": r,
+                                "col": c,
+                                "new_move": None,
+                                "new_row": None,
+                                "new_col": None,
+                            }
+                            self.game.save_move(move_history)
                             self.game.is_remove_piece = False
                     else:
                         self.game.make_move(r, c, None, None)
                 elif self.game.phase == constants.PHASE2:
                     if 0 <= r < constants.ROWS and 0 <= c < constants.COLS:
                         if self.game.is_remove_piece:
-                            if self.game.remove_piece(r, c, self.game.get_turn()):
+                            player = self.game.get_turn()
+                            if self.game.remove_piece(r, c, player):
+                                move_history = {
+                                    "type": constants.REMOVE_PIECE,
+                                    "player": player,
+                                    "move": self.game.get_move(r, c),
+                                    "row": r,
+                                    "col": c,
+                                    "new_move": None,
+                                    "new_row": None,
+                                    "new_col": None,
+                                }
+                                self.game.save_move(move_history)
                                 self.game.is_remove_piece = False
                         else:
                             if self.game.get_turn() == constants.PLAY1:
