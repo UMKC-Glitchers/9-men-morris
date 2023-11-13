@@ -1,3 +1,4 @@
+import json
 import os
 
 import constants
@@ -18,7 +19,6 @@ class NineMensMorrisGame:
         self.move_made = ""
         self.over = False
         self.moves_made = []  # TODO - Make it a stack, Will be useful when using undo
-        # TODO - Store the moves in a struct to save even the type of move i.e. place, move, remove, fly
 
     def update_pieces(self):
         if self.turn == constants.PLAY1:
@@ -80,46 +80,67 @@ class NineMensMorrisGame:
             return "Player 1"
         return "Player 2"
 
+    def save_move(self, move_history):
+        self.moves_made.append(move_history)
+
     def make_move(self, row, col, new_row, new_col):
         valid = self.is_move_valid(row, col, new_row, new_col)
         print("clicked:", row, col, valid)  # Debug message, Remove it later
+        move_type = constants.PLACE_PIECE
+        player = self.get_turn()
+        new_move = None
+
         if valid:
-            print("vaild move")
             move = self.get_move(row, col)
+            if new_row is not None and new_col is not None:
+                new_move = self.get_move(new_row, new_col)
+
             self.move_made = move
-            self.moves_made.append(move)
             self.counter = self.counter + 1
             if self.phase == constants.PHASE1:
                 self.place_piece(row, col, self.get_turn())
-
                 # if mill is formed, do not change the player's turn, but ask him to remove an opponent piece
                 print("Is mill:", self.is_mill(row, col, self.get_turn()))
 
                 if self.is_mill(row, col, self.get_turn()):
-                    self.message = self.get_player_from_const(self.get_turn()) + ", Remove a piece from opponent"
+                    self.message = self.get_player_from_const(self.get_turn()) + constants.REMOVE_PIECE_MESSAGE
                     self.is_remove_piece = True
                     return
-
+                move_type = constants.PLACE_PIECE
                 self.change_turn()
             elif self.phase == constants.PHASE2:
                 if self.get_player_pieces() == 3:
+                    move_type = constants.FLY_PIECE
                     if not self.fly_piece(row, col, new_row, new_col, self.get_turn()):
                         return
                     if self.is_mill(new_row, new_col, self.get_turn()):
-                        self.message = self.get_player_from_const(self.get_turn()) + ", Remove a piece from opponent"
+                        self.message = self.get_player_from_const(self.get_turn()) + constants.REMOVE_PIECE_MESSAGE
                         self.is_remove_piece = True
                         return
                 else:
+                    move_type = constants.MOVE_PIECE
                     self.move_piece(row, col, new_row, new_col, self.get_turn())
                     print("Is mill:", self.is_mill(new_row, new_col, self.get_turn()))
 
                     if self.is_mill(new_row, new_col, self.get_turn()):
-                        self.message = self.get_player_from_const(self.get_turn()) + ", Remove a piece from opponent"
+                        self.message = self.get_player_from_const(self.get_turn()) + constants.REMOVE_PIECE_MESSAGE
                         self.is_remove_piece = True
                         return
                 self.change_turn()
             elif self.phase == constants.PHASE3:
                 pass
+
+            move_history = {
+                "type": move_type,
+                "player": player,
+                "move": move,
+                "row": row,
+                "col": col,
+                "new_move": new_move,
+                "new_row": new_row,
+                "new_col": new_col,
+            }
+            self.save_move(move_history)
 
     def get_move(self, row, col):
         return constants.POSITIONS[col] + str(abs(row - 7))
@@ -205,10 +226,8 @@ class NineMensMorrisGame:
         if os.path.exists(constants.GAME_STATE_FILE):
             os.remove(constants.GAME_STATE_FILE)
 
-        state_file = open(constants.GAME_STATE_FILE, "w")
-        data = ",".join(self.moves_made)
-        state_file.write(data)
-        state_file.close()
+        with open(constants.GAME_STATE_FILE, 'w') as json_file:
+            json.dump(self.moves_made, json_file, indent=2)
 
     def is_game_over(self):
         # Game is finished when a player loses

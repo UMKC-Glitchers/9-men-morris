@@ -86,6 +86,8 @@ PLAYER2_MESSAGE = "Player 2 (Blue) turn to place piece"
 PLAY1_MOVE_MESSAGE = "Player 1 (Red) turn to move piece"
 PLAY2_MOVE_MESSAGE = "Player 2 (Blue) turn to move piece"
 
+REMOVE_PIECE_MESSAGE = ", Remove a piece from opponent"
+
 FLY_MESSAGE = "You can FLY your piece"
 
 H_VS_H = 0
@@ -102,3 +104,8 @@ POSITIONS = {
 }
 
 GAME_STATE_FILE = "game_state.txt"
+
+PLACE_PIECE = "place_piece"
+MOVE_PIECE = "move_piece"
+REMOVE_PIECE = "remove_piece"
+FLY_PIECE = "fly_piece"
