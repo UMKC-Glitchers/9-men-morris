@@ -440,12 +440,19 @@ class NineMensMorrisGame:
 
         # Phase 2: Moving pieces
         elif self.phase == constants.PHASE2:
-            for r in range(constants.ROWS):
-                for c in range(constants.COLS):
-                    if self.CURRENT_POSITION[r][c] == self.get_turn():
-                        for new_r, new_c in self.get_valid_moves():
-                            if self.is_move_valid(r, c, new_r, new_c):
+            if self.get_player_pieces() == 3:  # Flying rule for 3 pieces
+                for r in range(constants.ROWS):
+                    for c in range(constants.COLS):
+                        if self.CURRENT_POSITION[r][c] == self.get_turn():
+                            for new_r, new_c in self.get_valid_moves():
                                 valid_moves.append((r, c, new_r, new_c))
+            else:
+                for r in range(constants.ROWS):
+                    for c in range(constants.COLS):
+                        if self.CURRENT_POSITION[r][c] == self.get_turn():
+                            for new_r, new_c in self.get_valid_moves():
+                                if self.is_move_valid(r, c, new_r, new_c):
+                                    valid_moves.append((r, c, new_r, new_c))
 
         # Select a move randomly from the list of valid moves
         if valid_moves:
