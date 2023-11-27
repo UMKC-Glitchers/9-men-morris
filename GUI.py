@@ -16,7 +16,9 @@ def get_coords(mouse_pos):
 class NineMensMorrisGUI:
     def __init__(self, game):
         # Initialize Pygame window
-        self.screen = pygame.display.set_mode((constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT))
+        self.screen = pygame.display.set_mode(
+            (constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT)
+        )
         pygame.display.set_caption("Nine Men's Morris")
         self.clock = pygame.time.Clock()
         self.game = game
@@ -25,11 +27,19 @@ class NineMensMorrisGUI:
     def draw_board(self):
         self.screen.fill((255, 255, 255))
         for x in range(len(constants.LINES)):
-            pygame.draw.line(self.screen, constants.BLACK,
-                             (constants.LINES[x][0] * constants.SQUARESIZE,
-                              constants.SQUARESIZE * constants.LINES[x][1]),
-                             (constants.LINES[x][2] * constants.SQUARESIZE,
-                              constants.LINES[x][3] * constants.SQUARESIZE), 5)
+            pygame.draw.line(
+                self.screen,
+                constants.BLACK,
+                (
+                    constants.LINES[x][0] * constants.SQUARESIZE,
+                    constants.SQUARESIZE * constants.LINES[x][1],
+                ),
+                (
+                    constants.LINES[x][2] * constants.SQUARESIZE,
+                    constants.LINES[x][3] * constants.SQUARESIZE,
+                ),
+                5,
+            )
 
         for r in range(constants.ROWS):
             for c in range(constants.COLS):
@@ -44,9 +54,15 @@ class NineMensMorrisGUI:
                 else:
                     radius = 0
 
-                pygame.draw.circle(self.screen, color,
-                                   (int(c * constants.SQUARESIZE + constants.SQUARESIZE / 2),
-                                    int(r * constants.SQUARESIZE + constants.SQUARESIZE / 2)), radius)
+                pygame.draw.circle(
+                    self.screen,
+                    color,
+                    (
+                        int(c * constants.SQUARESIZE + constants.SQUARESIZE / 2),
+                        int(r * constants.SQUARESIZE + constants.SQUARESIZE / 2),
+                    ),
+                    radius,
+                )
 
         # Highlight the selected position
         if self.game.move_made and self.clicked_point:
@@ -56,18 +72,50 @@ class NineMensMorrisGUI:
         myfont = pygame.font.SysFont("Comic Sans MS", 30)
 
         label = myfont.render(self.game.message, 1, constants.BLACK)
-        self.screen.blit(label, (.5 * constants.SQUARESIZE, 7 * constants.SQUARESIZE))
+        self.screen.blit(label, (0.5 * constants.SQUARESIZE, 7 * constants.SQUARESIZE))
 
-        moveLabel = myfont.render("Move made: " + self.game.move_made, 1, constants.BLACK)
-        self.screen.blit(moveLabel, (.5 * constants.SQUARESIZE, 7.5 * constants.SQUARESIZE))
+        moveLabel = myfont.render(
+            "Move made: " + self.game.move_made, 1, constants.BLACK
+        )
+        self.screen.blit(
+            moveLabel, (0.5 * constants.SQUARESIZE, 7.5 * constants.SQUARESIZE)
+        )
 
-        player1_pieces = myfont.render("P1:" + str(abs(self.game.play1_counter - constants.TOTAL_MENS)), 1, constants.BLACK)
-        self.screen.blit(player1_pieces, (7.5 * constants.SQUARESIZE, .5 * constants.SQUARESIZE))
+        player1_pieces = myfont.render(
+            "P1:" + str(abs(self.game.play1_counter - constants.TOTAL_MENS)),
+            1,
+            constants.BLACK,
+        )
+        self.screen.blit(
+            player1_pieces, (7.5 * constants.SQUARESIZE, 0.5 * constants.SQUARESIZE)
+        )
 
-        player2_pieces = myfont.render("P2:" + str(abs(self.game.play2_counter - constants.TOTAL_MENS)), 1, constants.BLACK)
-        self.screen.blit(player2_pieces, (7.5 * constants.SQUARESIZE, .8 * constants.SQUARESIZE))
+        player2_pieces = myfont.render(
+            "P2:" + str(abs(self.game.play2_counter - constants.TOTAL_MENS)),
+            1,
+            constants.BLACK,
+        )
+        self.screen.blit(
+            player2_pieces, (7.5 * constants.SQUARESIZE, 0.8 * constants.SQUARESIZE)
+        )
 
     def handle_events(self):
+        if (
+            self.game.game_mode == constants.H_VS_C
+            and self.game.turn == constants.PLAY2
+        ):
+            move = self.game.computer_make_move()
+            if move:
+                if self.game.phase == constants.PHASE1:
+                    self.game.make_move(move[0], move[1], None, None)
+                elif self.game.phase == constants.PHASE2:
+                    self.game.make_move(
+                        move[0], move[1], move[2], move[3]
+                    )  # Move piece in Phase 2
+            self.draw_board()
+            pygame.display.flip()
+            return
+
         (r, c) = get_coords(pygame.mouse.get_pos())
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -84,7 +132,7 @@ class NineMensMorrisGUI:
                             move_history = {
                                 "type": constants.REMOVE_PIECE,
                                 "player": self.game.get_turn(),
-                                "move": self.game.get_move(r,c),
+                                "move": self.game.get_move(r, c),
                                 "row": r,
                                 "col": c,
                                 "new_move": None,
@@ -116,30 +164,50 @@ class NineMensMorrisGUI:
                             if self.game.get_turn() == constants.PLAY1:
                                 if self.clicked_point is None:
                                     # If no piece is selected, check if the clicked point has a player's piece
-                                    if self.game.CURRENT_POSITION[r][c] == constants.PLAY1:
+                                    if (
+                                        self.game.CURRENT_POSITION[r][c]
+                                        == constants.PLAY1
+                                    ):
                                         self.clicked_point = (r, c)
                                 else:
                                     # Check for valid point
-                                    self.game.make_move(self.clicked_point[0], self.clicked_point[1], r, c)
+                                    self.game.make_move(
+                                        self.clicked_point[0],
+                                        self.clicked_point[1],
+                                        r,
+                                        c,
+                                    )
                                     self.clicked_point = None
                             elif self.game.get_turn() == constants.PLAY2:
                                 if self.clicked_point is None:
                                     # If no piece is selected, check if the clicked point has a player's piece
-                                    if self.game.CURRENT_POSITION[r][c] == constants.PLAY2:
+                                    if (
+                                        self.game.CURRENT_POSITION[r][c]
+                                        == constants.PLAY2
+                                    ):
                                         self.clicked_point = (r, c)
                                 else:
                                     # If a piece is selected, try to move it to the clicked point
-                                    self.game.make_move(self.clicked_point[0], self.clicked_point[1], r, c)
+                                    self.game.make_move(
+                                        self.clicked_point[0],
+                                        self.clicked_point[1],
+                                        r,
+                                        c,
+                                    )
                                     self.clicked_point = None
 
     def draw_highlight(self, r, c):
         x = c * constants.SQUARESIZE + constants.SQUARESIZE / 2
         y = r * constants.SQUARESIZE + constants.SQUARESIZE / 2
-        highlight_radius = constants.CIRCLE_RADIUS + 5  # Adjust the radius as needed for the glowing effect
+        highlight_radius = (
+            constants.CIRCLE_RADIUS + 5
+        )  # Adjust the radius as needed for the glowing effect
         highlight_color = constants.GRAY
 
         # Draw a glowing circle around the piece
-        pygame.draw.circle(self.screen, highlight_color, (int(x), int(y)), highlight_radius)
+        pygame.draw.circle(
+            self.screen, highlight_color, (int(x), int(y)), highlight_radius
+        )
 
     def main_loop(self):
         while True:

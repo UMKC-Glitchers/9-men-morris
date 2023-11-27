@@ -9,7 +9,9 @@ class Menu:
         self.human_vs_computer_button = None
         self.human_vs_human_button_rect = None
         self.human_vs_human_button = None
-        self.screen = pygame.display.set_mode((constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT))
+        self.screen = pygame.display.set_mode(
+            (constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT)
+        )
         pygame.display.set_caption("Nine Men's Morris - Menu")
         self.clock = pygame.time.Clock()
         self.selected_option = None
@@ -25,8 +27,8 @@ class Menu:
                     if self.human_vs_human_button_rect.collidepoint(event.pos):
                         self.selected_option = constants.H_VS_H
                     elif self.human_vs_computer_button_rect.collidepoint(event.pos):
-                        self.selected_option = None
-                        # self.selected_option = constants.H_VS_C
+                        # self.selected_option = None
+                        self.selected_option = constants.H_VS_C
 
             self.screen.fill(constants.WHITE)
 
@@ -39,12 +41,16 @@ class Menu:
             self.screen.blit(text, text_rect)
 
             # Create buttons
-            self.human_vs_human_button = pygame.draw.rect(self.screen, constants.GREEN, (150, 200, 280, 50))
+            self.human_vs_human_button = pygame.draw.rect(
+                self.screen, constants.GREEN, (150, 200, 280, 50)
+            )
             text_hvh = self.font.render("Human vs Human", True, constants.BLACK)
             self.screen.blit(text_hvh, (175, 210))
             self.human_vs_human_button_rect = self.human_vs_human_button
 
-            self.human_vs_computer_button = pygame.draw.rect(self.screen, constants.YELLOW, (150, 270, 280, 50))
+            self.human_vs_computer_button = pygame.draw.rect(
+                self.screen, constants.YELLOW, (150, 270, 280, 50)
+            )
             text_hvc = self.font.render("Human vs Computer", True, constants.BLACK)
             self.screen.blit(text_hvc, (175, 280))
             self.human_vs_computer_button_rect = self.human_vs_computer_button

@@ -2,6 +2,7 @@ import json
 import os
 
 import constants
+import random
 
 
 class NineMensMorrisGame:
@@ -37,9 +38,14 @@ class NineMensMorrisGame:
                 self.turn = constants.PLAY1
                 self.message = constants.PLAYER1_MESSAGE
 
-            if self.play1_counter == constants.TOTAL_MENS and self.play2_counter == constants.TOTAL_MENS:
+            if (
+                self.play1_counter == constants.TOTAL_MENS
+                and self.play2_counter == constants.TOTAL_MENS
+            ):
                 self.set_phase(constants.PHASE2)
-                self.message = ("Pieces placed, Move pieces now\n" + constants.PLAY1_MOVE_MESSAGE)
+                self.message = (
+                    "Pieces placed, Move pieces now\n" + constants.PLAY1_MOVE_MESSAGE
+                )
 
         elif self.phase == constants.PHASE2:
             if self.turn == constants.PLAY1:
@@ -52,11 +58,15 @@ class NineMensMorrisGame:
             self.message = "Invalid phase"
 
         if self.get_player_pieces() == 3:
-            self.message = self.get_player_from_const(self.get_turn()) + constants.FLY_MESSAGE
+            self.message = (
+                self.get_player_from_const(self.get_turn()) + constants.FLY_MESSAGE
+            )
 
         # check for game over
         if self.is_game_over() is not None:
-            self.message = self.get_player_from_const(self.is_game_over()) + " Wins the game!!"
+            self.message = (
+                self.get_player_from_const(self.is_game_over()) + " Wins the game!!"
+            )
             self.over = True
 
     def get_turn(self):
@@ -103,7 +113,10 @@ class NineMensMorrisGame:
                 print("Is mill:", self.is_mill(row, col, self.get_turn()))
 
                 if self.is_mill(row, col, self.get_turn()):
-                    self.message = self.get_player_from_const(self.get_turn()) + constants.REMOVE_PIECE_MESSAGE
+                    self.message = (
+                        self.get_player_from_const(self.get_turn())
+                        + constants.REMOVE_PIECE_MESSAGE
+                    )
                     self.is_remove_piece = True
                     return
                 move_type = constants.PLACE_PIECE
@@ -114,7 +127,10 @@ class NineMensMorrisGame:
                     if not self.fly_piece(row, col, new_row, new_col, self.get_turn()):
                         return
                     if self.is_mill(new_row, new_col, self.get_turn()):
-                        self.message = self.get_player_from_const(self.get_turn()) + constants.REMOVE_PIECE_MESSAGE
+                        self.message = (
+                            self.get_player_from_const(self.get_turn())
+                            + constants.REMOVE_PIECE_MESSAGE
+                        )
                         self.is_remove_piece = True
                         return
                 else:
@@ -123,7 +139,10 @@ class NineMensMorrisGame:
                     print("Is mill:", self.is_mill(new_row, new_col, self.get_turn()))
 
                     if self.is_mill(new_row, new_col, self.get_turn()):
-                        self.message = self.get_player_from_const(self.get_turn()) + constants.REMOVE_PIECE_MESSAGE
+                        self.message = (
+                            self.get_player_from_const(self.get_turn())
+                            + constants.REMOVE_PIECE_MESSAGE
+                        )
                         self.is_remove_piece = True
                         return
                 self.change_turn()
@@ -153,14 +172,17 @@ class NineMensMorrisGame:
             return [row, col] in self.get_valid_moves()
         elif self.phase == constants.PHASE2:
             if not (
-                    0 <= row < constants.ROWS
-                    and 0 <= col < constants.COLS
-                    and 0 <= new_row < constants.ROWS
-                    and 0 <= new_col < constants.COLS
+                0 <= row < constants.ROWS
+                and 0 <= col < constants.COLS
+                and 0 <= new_row < constants.ROWS
+                and 0 <= new_col < constants.COLS
             ):
                 return False
 
-            if self.CURRENT_POSITION[row][col] == self.get_turn() and self.CURRENT_POSITION[new_row][new_col] == constants.BLANK:
+            if (
+                self.CURRENT_POSITION[row][col] == self.get_turn()
+                and self.CURRENT_POSITION[new_row][new_col] == constants.BLANK
+            ):
                 # Check the valid positions matrix, there should exist a 3 in it and a 0 in current position
                 # Can skip 0 for a complete row or column, Should handle a special case
                 if self.get_player_pieces() == 3:
@@ -172,18 +194,36 @@ class NineMensMorrisGame:
                         if new_col > col:
                             col_index += 1
                             while col_index <= new_col:
-                                if constants.VALID_POSITIONS[row][col_index] == constants.VALID and self.CURRENT_POSITION[row][col_index] == constants.BLANK and col_index == new_col:
+                                if (
+                                    constants.VALID_POSITIONS[row][col_index]
+                                    == constants.VALID
+                                    and self.CURRENT_POSITION[row][col_index]
+                                    == constants.BLANK
+                                    and col_index == new_col
+                                ):
                                     return True
-                                elif constants.VALID_POSITIONS[row][col_index] == 0 and row != 3:
+                                elif (
+                                    constants.VALID_POSITIONS[row][col_index] == 0
+                                    and row != 3
+                                ):
                                     col_index += 1
                                 else:
                                     return False
                         else:
                             col_index -= 1
                             while col_index >= new_col:
-                                if constants.VALID_POSITIONS[row][col_index] == constants.VALID and self.CURRENT_POSITION[row][col_index] == constants.BLANK and col_index == new_col:
+                                if (
+                                    constants.VALID_POSITIONS[row][col_index]
+                                    == constants.VALID
+                                    and self.CURRENT_POSITION[row][col_index]
+                                    == constants.BLANK
+                                    and col_index == new_col
+                                ):
                                     return True
-                                elif constants.VALID_POSITIONS[row][col_index] == 0 and row != 3:
+                                elif (
+                                    constants.VALID_POSITIONS[row][col_index] == 0
+                                    and row != 3
+                                ):
                                     col_index -= 1
                                 else:
                                     return False
@@ -192,18 +232,36 @@ class NineMensMorrisGame:
                         if new_row > row:
                             row_index += 1
                             while row_index <= new_row:
-                                if constants.VALID_POSITIONS[row_index][col] == constants.VALID and self.CURRENT_POSITION[row_index][col] == constants.BLANK and row_index == new_row:
+                                if (
+                                    constants.VALID_POSITIONS[row_index][col]
+                                    == constants.VALID
+                                    and self.CURRENT_POSITION[row_index][col]
+                                    == constants.BLANK
+                                    and row_index == new_row
+                                ):
                                     return True
-                                elif constants.VALID_POSITIONS[row_index][col] == 0 and col != 3:
+                                elif (
+                                    constants.VALID_POSITIONS[row_index][col] == 0
+                                    and col != 3
+                                ):
                                     row_index += 1
                                 else:
                                     return False
                         else:
                             row_index -= 1
                             while row_index >= new_row:
-                                if constants.VALID_POSITIONS[row_index][col] == constants.VALID and self.CURRENT_POSITION[row_index][col] == constants.BLANK and row_index == new_row:
+                                if (
+                                    constants.VALID_POSITIONS[row_index][col]
+                                    == constants.VALID
+                                    and self.CURRENT_POSITION[row_index][col]
+                                    == constants.BLANK
+                                    and row_index == new_row
+                                ):
                                     return True
-                                elif constants.VALID_POSITIONS[row_index][col] == 0 and col != 3:
+                                elif (
+                                    constants.VALID_POSITIONS[row_index][col] == 0
+                                    and col != 3
+                                ):
                                     row_index -= 1
                                 else:
                                     return False
@@ -226,7 +284,7 @@ class NineMensMorrisGame:
         if os.path.exists(constants.GAME_STATE_FILE):
             os.remove(constants.GAME_STATE_FILE)
 
-        with open(constants.GAME_STATE_FILE, 'w') as json_file:
+        with open(constants.GAME_STATE_FILE, "w") as json_file:
             json.dump(self.moves_made, json_file, indent=2)
 
     def is_game_over(self):
@@ -247,13 +305,19 @@ class NineMensMorrisGame:
 
     # Fixme - Player can remove from a mill if no other pieces are available
     def remove_piece(self, row, col, player):
-        if self.CURRENT_POSITION[row][col] != player and self.CURRENT_POSITION[row][col] != constants.BLANK:
+        if (
+            self.CURRENT_POSITION[row][col] != player
+            and self.CURRENT_POSITION[row][col] != constants.BLANK
+        ):
             if not self.is_mill(row, col, self.CURRENT_POSITION[row][col]):
                 self.CURRENT_POSITION[row][col] = constants.BLANK
                 self.update_pieces()
                 self.change_turn()
                 return True
-            if self.is_mill(row, col, self.CURRENT_POSITION[row][col]) and not self.has_free_pieces():
+            if (
+                self.is_mill(row, col, self.CURRENT_POSITION[row][col])
+                and not self.has_free_pieces()
+            ):
                 self.CURRENT_POSITION[row][col] = constants.BLANK
                 self.update_pieces()
                 self.change_turn()
@@ -279,9 +343,15 @@ class NineMensMorrisGame:
                 row_index = 4
 
         while col_index < constants.COLS:
-            if constants.VALID_POSITIONS[row][col_index] == constants.VALID and self.CURRENT_POSITION[row][col_index] == player:
+            if (
+                constants.VALID_POSITIONS[row][col_index] == constants.VALID
+                and self.CURRENT_POSITION[row][col_index] == player
+            ):
                 piece_count += 1
-            elif constants.VALID_POSITIONS[row][col_index] == constants.VALID and constants.VALID_POSITIONS[row][col_index] != player:
+            elif (
+                constants.VALID_POSITIONS[row][col_index] == constants.VALID
+                and constants.VALID_POSITIONS[row][col_index] != player
+            ):
                 piece_count = 0
             if row == 3 and col_index == 3:
                 break
@@ -294,9 +364,15 @@ class NineMensMorrisGame:
 
         piece_count = 0
         while row_index < constants.ROWS:
-            if constants.VALID_POSITIONS[row_index][col] == constants.VALID and self.CURRENT_POSITION[row_index][col] == player:
+            if (
+                constants.VALID_POSITIONS[row_index][col] == constants.VALID
+                and self.CURRENT_POSITION[row_index][col] == player
+            ):
                 piece_count += 1
-            elif constants.VALID_POSITIONS[row_index][col] == constants.VALID and constants.VALID_POSITIONS[row_index][col] != player:
+            elif (
+                constants.VALID_POSITIONS[row_index][col] == constants.VALID
+                and constants.VALID_POSITIONS[row_index][col] != player
+            ):
                 piece_count = 0
             if row_index == 3 and col == 3:
                 return False
@@ -311,7 +387,9 @@ class NineMensMorrisGame:
     def has_free_pieces(self):
         for r in range(constants.ROWS):
             for c in range(constants.COLS):
-                if self.CURRENT_POSITION[r][c] == self.get_opp() and not self.is_mill_at_position(r, c):
+                if self.CURRENT_POSITION[r][
+                    c
+                ] == self.get_opp() and not self.is_mill_at_position(r, c):
                     return True  # Found a free piece belonging to the player
         return False
 
@@ -321,11 +399,15 @@ class NineMensMorrisGame:
             return False  # No mill possible if the position is empty
 
         # Check horizontal and vertical lines
-        if self.check_line(row, col, 0, 1, player) or self.check_line(row, col, 1, 0, player):
+        if self.check_line(row, col, 0, 1, player) or self.check_line(
+            row, col, 1, 0, player
+        ):
             return True
 
         # Check diagonal lines
-        if self.check_line(row, col, 1, 1, player) or self.check_line(row, col, 1, -1, player):
+        if self.check_line(row, col, 1, 1, player) or self.check_line(
+            row, col, 1, -1, player
+        ):
             return True
 
         return False
@@ -333,8 +415,39 @@ class NineMensMorrisGame:
     def check_line(self, row, col, dr, dc, player):
         for i in range(1, 3):  # Check up to 2 positions in the line
             r, c = row + i * dr, col + i * dc
-            if 0 <= r < constants.ROWS and 0 <= c < constants.COLS and self.CURRENT_POSITION[r][c] != player:
+            if (
+                0 <= r < constants.ROWS
+                and 0 <= c < constants.COLS
+                and self.CURRENT_POSITION[r][c] != player
+            ):
                 return False  # The line is not valid if there is an opponent's piece
-            elif 0 <= r < constants.ROWS and 0 <= c < constants.COLS and self.CURRENT_POSITION[r][c] == constants.BLANK:
+            elif (
+                0 <= r < constants.ROWS
+                and 0 <= c < constants.COLS
+                and self.CURRENT_POSITION[r][c] == constants.BLANK
+            ):
                 return False  # The line is not valid if there is a blank space
         return True  # The line is valid (contains only player's pieces)
+
+    def computer_make_move(self):
+        valid_moves = []
+
+        # Phase 1: Placing pieces
+        if self.phase == constants.PHASE1:
+            valid_moves = self.get_valid_moves()
+            valid_moves = [(r, c, None, None) for r, c in valid_moves]
+
+        # Phase 2: Moving pieces
+        elif self.phase == constants.PHASE2:
+            for r in range(constants.ROWS):
+                for c in range(constants.COLS):
+                    if self.CURRENT_POSITION[r][c] == self.get_turn():
+                        for new_r, new_c in self.get_valid_moves():
+                            if self.is_move_valid(r, c, new_r, new_c):
+                                valid_moves.append((r, c, new_r, new_c))
+
+        # Select a move randomly from the list of valid moves
+        if valid_moves:
+            return random.choice(valid_moves)
+        else:
+            return None
