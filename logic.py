@@ -95,7 +95,7 @@ class NineMensMorrisGame:
 
     def make_move(self, row, col, new_row, new_col):
         valid = self.is_move_valid(row, col, new_row, new_col)
-        print("clicked:", row, col, valid)  # Debug message, Remove it later
+        # print("clicked:", row, col, valid)  # Debug message, Remove it later
         move_type = constants.PLACE_PIECE
         player = self.get_turn()
         new_move = None
@@ -110,7 +110,7 @@ class NineMensMorrisGame:
             if self.phase == constants.PHASE1:
                 self.place_piece(row, col, self.get_turn())
                 # if mill is formed, do not change the player's turn, but ask him to remove an opponent piece
-                print("Is mill:", self.is_mill(row, col, self.get_turn()))
+                # print("Is mill:", self.is_mill(row, col, self.get_turn()))
 
                 if self.is_mill(row, col, self.get_turn()):
                     self.message = (
@@ -305,6 +305,7 @@ class NineMensMorrisGame:
 
     # Fixme - Player can remove from a mill if no other pieces are available
     def remove_piece(self, row, col, player):
+        print("Removing piece:", row, col, player)
         if (
             self.CURRENT_POSITION[row][col] != player
             and self.CURRENT_POSITION[row][col] != constants.BLANK
@@ -451,3 +452,19 @@ class NineMensMorrisGame:
             return random.choice(valid_moves)
         else:
             return None
+
+    def select_piece_to_remove(self):
+        print("Selecting piece to remove...")
+        # Select a piece of the opponent that is not in a mill
+        for r in range(constants.ROWS):
+            for c in range(constants.COLS):
+                if self.CURRENT_POSITION[r][c] == self.get_opp() and not self.is_mill(
+                    r, c, self.get_opp()
+                ):
+                    return r, c
+        # If all pieces are in mills, select any opponent's piece
+        for r in range(constants.ROWS):
+            for c in range(constants.COLS):
+                if self.CURRENT_POSITION[r][c] == self.get_opp():
+                    return r, c
+        return None
