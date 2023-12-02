@@ -431,34 +431,68 @@ class NineMensMorrisGame:
         return True  # The line is valid (contains only player's pieces)
 
     def computer_make_move(self):
-        valid_moves = []
+        potential_mill_moves = []
+        block_opponent_mill_moves = []
+        other_valid_moves = []
 
-        # Phase 1: Placing pieces
+        # Check all possible moves for potential mills or blocking opponent's mills
         if self.phase == constants.PHASE1:
-            valid_moves = self.get_valid_moves()
-            valid_moves = [(r, c, None, None) for r, c in valid_moves]
+            for r, c in self.get_valid_moves():
+                if self.would_form_mill(r, c, self.get_turn()):
+                    potential_mill_moves.append((r, c, None, None))
+                elif self.would_block_opponent_mill(r, c):
+                    block_opponent_mill_moves.append((r, c, None, None))
+                else:
+                    other_valid_moves.append((r, c, None, None))
 
-        # Phase 2: Moving pieces
         elif self.phase == constants.PHASE2:
-            if self.get_player_pieces() == 3:  # Flying rule for 3 pieces
-                for r in range(constants.ROWS):
-                    for c in range(constants.COLS):
-                        if self.CURRENT_POSITION[r][c] == self.get_turn():
-                            for new_r, new_c in self.get_valid_moves():
-                                valid_moves.append((r, c, new_r, new_c))
-            else:
-                for r in range(constants.ROWS):
-                    for c in range(constants.COLS):
-                        if self.CURRENT_POSITION[r][c] == self.get_turn():
-                            for new_r, new_c in self.get_valid_moves():
-                                if self.is_move_valid(r, c, new_r, new_c):
-                                    valid_moves.append((r, c, new_r, new_c))
+            for r in range(constants.ROWS):
+                for c in range(constants.COLS):
+                    if self.CURRENT_POSITION[r][c] == self.get_turn():
+                        for new_r, new_c in self.get_valid_moves():
+                            if self.get_player_pieces() == 3 or self.is_move_valid(
+                                r, c, new_r, new_c
+                            ):
+                                if self.would_form_mill(new_r, new_c, self.get_turn()):
+                                    potential_mill_moves.append((r, c, new_r, new_c))
+                                elif self.would_block_opponent_mill(new_r, new_c):
+                                    block_opponent_mill_moves.append(
+                                        (r, c, new_r, new_c)
+                                    )
+                                else:
+                                    other_valid_moves.append((r, c, new_r, new_c))
 
-        # Select a move randomly from the list of valid moves
-        if valid_moves:
-            return random.choice(valid_moves)
+        # Select a move
+        if potential_mill_moves:
+            return random.choice(potential_mill_moves)
+        elif block_opponent_mill_moves:
+            return random.choice(block_opponent_mill_moves)
+        elif other_valid_moves:
+            return random.choice(other_valid_moves)
         else:
             return None
+
+    def would_form_mill(self, row, col, player):
+        # Temporarily place/move the piece
+        original_value = self.CURRENT_POSITION[row][col]
+        self.CURRENT_POSITION[row][col] = player
+        # Check if this forms a mill
+        forms_mill = self.is_mill(row, col, player)
+        # Revert the board to its original state
+        self.CURRENT_POSITION[row][col] = original_value
+
+        return forms_mill
+
+    def would_block_opponent_mill(self, row, col):
+        # Temporarily place/move the piece
+        original_value = self.CURRENT_POSITION[row][col]
+        self.CURRENT_POSITION[row][col] = self.get_opp()
+        # Check if this would form a mill for the opponent
+        would_form_mill = self.is_mill(row, col, self.get_opp())
+        # Revert the board to its original state
+        self.CURRENT_POSITION[row][col] = original_value
+
+        return would_form_mill
 
     def select_piece_to_remove(self):
         print("Selecting piece to remove...")
