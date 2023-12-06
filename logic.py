@@ -1,12 +1,14 @@
 import json
 import os
+import uuid
 
 import constants
 import random
+from datetime import datetime
 
 
 class NineMensMorrisGame:
-    def __init__(self):
+    def __init__(self, db_interface):
         self.phase = constants.PHASE1
         self.turn = constants.PLAY1
         self.CURRENT_POSITION = constants.CURRENT_POSITION
@@ -20,6 +22,9 @@ class NineMensMorrisGame:
         self.move_made = ""
         self.over = False
         self.moves_made = []  # TODO - Make it a stack, Will be useful when using undo
+        self.db = db_interface
+        self.game_mode = ""
+        self.start_time = datetime.now()
 
     def update_pieces(self):
         if self.turn == constants.PLAY1:
@@ -279,13 +284,37 @@ class NineMensMorrisGame:
         return moves
 
     def save_game(self):
-        print("Saving moves:", self.moves_made)
+        # print("Saving moves:", self.moves_made)
 
         if os.path.exists(constants.GAME_STATE_FILE):
             os.remove(constants.GAME_STATE_FILE)
 
         with open(constants.GAME_STATE_FILE, "w") as json_file:
             json.dump(self.moves_made, json_file, indent=2)
+
+        print ("Storing moves in DB...")
+
+        moves_json = json.dumps(self.moves_made, indent=2)
+        print (moves_json)
+
+        # Generate a random UUID
+        new_uuid = uuid.uuid4()
+
+        # Convert the UUID to a string if needed
+        uuid_string = str(new_uuid)
+
+        moves_to_store = [{
+            "id": uuid_string,
+            "name": "test",  # Update this
+            "game_type": "9 mens",  # Update this
+            "game_mode": self.game_mode,
+            "played_at":  self.start_time.utcnow(),
+            "moves": moves_json,
+        }]
+
+        self.db.save_moves(moves_to_store)
+
+        print ("Stored moves in DB")
 
     def is_game_over(self):
         # Game is finished when a player loses
