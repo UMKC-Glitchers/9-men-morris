@@ -123,6 +123,17 @@ class NineMensMorrisGame:
                         + constants.REMOVE_PIECE_MESSAGE
                     )
                     self.is_remove_piece = True
+                    move_history = {
+                        "type": move_type,
+                        "player": player,
+                        "move": move,
+                        "row": row,
+                        "col": col,
+                        "new_move": new_move,
+                        "new_row": new_row,
+                        "new_col": new_col,
+                    }
+                    self.save_move(move_history)
                     return
                 move_type = constants.PLACE_PIECE
                 self.change_turn()
@@ -137,6 +148,17 @@ class NineMensMorrisGame:
                             + constants.REMOVE_PIECE_MESSAGE
                         )
                         self.is_remove_piece = True
+                        move_history = {
+                            "type": move_type,
+                            "player": player,
+                            "move": move,
+                            "row": row,
+                            "col": col,
+                            "new_move": new_move,
+                            "new_row": new_row,
+                            "new_col": new_col,
+                        }
+                        self.save_move(move_history)
                         return
                 else:
                     move_type = constants.MOVE_PIECE
@@ -149,6 +171,17 @@ class NineMensMorrisGame:
                             + constants.REMOVE_PIECE_MESSAGE
                         )
                         self.is_remove_piece = True
+                        move_history = {
+                            "type": move_type,
+                            "player": player,
+                            "move": move,
+                            "row": row,
+                            "col": col,
+                            "new_move": new_move,
+                            "new_row": new_row,
+                            "new_col": new_col,
+                        }
+                        self.save_move(move_history)
                         return
                 self.change_turn()
             elif self.phase == constants.PHASE3:
