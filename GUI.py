@@ -126,6 +126,8 @@ class NineMensMorrisGUI:
 
     def handle_events(self):
         if self.replay_game and self.replay_game_moves_index < len(self.replay_game_moves):
+            time.sleep(1)
+
             print(self.replay_game_moves[self.replay_game_moves_index])
             move = self.replay_game_moves[self.replay_game_moves_index]
             # move_type = move['type']
@@ -134,6 +136,13 @@ class NineMensMorrisGUI:
                 self.game.make_move(move['row'], move['col'], None, None)
             elif self.game.phase == constants.PHASE2:
                 self.game.make_move(move['row'], move['col'], move['new_row'], move['new_col'])
+
+            if self.game.is_remove_piece:
+                self.replay_game_moves_index = self.replay_game_moves_index + 1
+                move = self.replay_game_moves[self.replay_game_moves_index]
+                player = self.game.get_turn()
+                self.game.remove_piece(move['row'], move['col'], player)
+                self.game.is_remove_piece = False
 
             # if move_type == constants.PLACE_PIECE:
             #     self.game.place_piece(move['row'], move['col'], move['player'])
@@ -145,7 +154,6 @@ class NineMensMorrisGUI:
             #     self.game.fly_piece(move['row'], move['col'], move['new_row'], move['new_col'], move['player'])
 
             self.replay_game_moves_index = self.replay_game_moves_index + 1
-            time.sleep(1)
 
         if (
             self.game.game_mode == constants.H_VS_C
