@@ -144,15 +144,6 @@ class NineMensMorrisGUI:
                 self.game.remove_piece(move['row'], move['col'], player)
                 self.game.is_remove_piece = False
 
-            # if move_type == constants.PLACE_PIECE:
-            #     self.game.place_piece(move['row'], move['col'], move['player'])
-            # elif move_type == constants.MOVE_PIECE:
-            #     self.game.move_piece(move['row'], move['col'], move['new_row'], move['new_col'], move['player'])
-            # elif move_type == constants.REMOVE_PIECE:
-            #     self.game.remove_piece(move['row'], move['col'], move['player'])
-            # elif move_type == constants.FLY_PIECE:
-            #     self.game.fly_piece(move['row'], move['col'], move['new_row'], move['new_col'], move['player'])
-
             self.replay_game_moves_index = self.replay_game_moves_index + 1
 
         if (
