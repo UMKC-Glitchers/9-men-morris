@@ -128,16 +128,21 @@ class NineMensMorrisGUI:
         if self.replay_game and self.replay_game_moves_index < len(self.replay_game_moves):
             print(self.replay_game_moves[self.replay_game_moves_index])
             move = self.replay_game_moves[self.replay_game_moves_index]
-            move_type = move['type']
+            # move_type = move['type']
 
-            if move_type == constants.PLACE_PIECE:
-                self.game.place_piece(move['row'], move['col'], move['player'])
-            elif move_type == constants.MOVE_PIECE:
-                self.game.move_piece(move['row'], move['col'], move['new_row'], move['new_col'], move['player'])
-            elif move_type == constants.REMOVE_PIECE:
-                self.game.remove_piece(move['row'], move['col'], move['player'])
-            elif move_type == constants.FLY_PIECE:
-                self.game.fly_piece(move['row'], move['col'], move['new_row'], move['new_col'], move['player'])
+            if self.game.phase == constants.PHASE1:
+                self.game.make_move(move['row'], move['col'], None, None)
+            elif self.game.phase == constants.PHASE2:
+                self.game.make_move(move['row'], move['col'], move['new_row'], move['new_col'])
+
+            # if move_type == constants.PLACE_PIECE:
+            #     self.game.place_piece(move['row'], move['col'], move['player'])
+            # elif move_type == constants.MOVE_PIECE:
+            #     self.game.move_piece(move['row'], move['col'], move['new_row'], move['new_col'], move['player'])
+            # elif move_type == constants.REMOVE_PIECE:
+            #     self.game.remove_piece(move['row'], move['col'], move['player'])
+            # elif move_type == constants.FLY_PIECE:
+            #     self.game.fly_piece(move['row'], move['col'], move['new_row'], move['new_col'], move['player'])
 
             self.replay_game_moves_index = self.replay_game_moves_index + 1
             time.sleep(1)
@@ -166,6 +171,17 @@ class NineMensMorrisGUI:
                             self.game.remove_piece(
                                 *piece_to_remove, self.game.get_turn()
                             )
+                            move_history = {
+                                "type": constants.REMOVE_PIECE,
+                                "player": self.game.get_turn(),
+                                "move": self.game.get_move(new_row, new_col),
+                                "row": new_row,
+                                "col": new_col,
+                                "new_move": None,
+                                "new_row": None,
+                                "new_col": None,
+                            }
+                            self.game.save_move(move_history)
                             self.game.is_remove_piece = False
 
         (r, c) = get_coords(pygame.mouse.get_pos())
