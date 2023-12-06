@@ -62,7 +62,7 @@ ROWS = 7
 COLS = 7
 
 # Constants for the screen dimensions and board
-SCREEN_WIDTH = 850
+SCREEN_WIDTH = 900
 SCREEN_HEIGHT = 700
 LINE_COLOR = (0, 0, 0)
 CIRCLE_COLOR = (0, 0, 0)

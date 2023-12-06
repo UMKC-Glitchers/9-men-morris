@@ -286,11 +286,14 @@ class NineMensMorrisGame:
     def save_game(self):
         # print("Saving moves:", self.moves_made)
 
-        if os.path.exists(constants.GAME_STATE_FILE):
-            os.remove(constants.GAME_STATE_FILE)
+        if len(self.moves_made) == 0:
+            return
 
-        with open(constants.GAME_STATE_FILE, "w") as json_file:
-            json.dump(self.moves_made, json_file, indent=2)
+        # if os.path.exists(constants.GAME_STATE_FILE):
+        #     os.remove(constants.GAME_STATE_FILE)
+        #
+        # with open(constants.GAME_STATE_FILE, "w") as json_file:
+        #     json.dump(self.moves_made, json_file, indent=2)
 
         print ("Storing moves in DB...")
 
@@ -307,6 +310,7 @@ class NineMensMorrisGame:
             "id": uuid_string,
             "name": "test",  # Update this
             "game_type": "9 mens",  # Update this
+            "total_moves": len(self.moves_made),
             "game_mode": self.game_mode,
             "played_at":  self.start_time.utcnow(),
             "moves": moves_json,
@@ -332,7 +336,7 @@ class NineMensMorrisGame:
             return True
         return False
 
-    # Fixme - Player can remove from a mill if no other pieces are available
+    # Fixme - Player can remove from a mill if no other pieces are available (doesn't work for more than one mill and no free piece)
     def remove_piece(self, row, col, player):
         print("Removing piece:", row, col, player)
         if (

@@ -2,7 +2,6 @@ from sqlalchemy import create_engine, Column, Integer, String, DateTime, JSON
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from datetime import datetime
-import json
 
 Base = declarative_base()
 
@@ -14,11 +13,12 @@ class MoveHistory(Base):
     name = Column(String)
     game_type = Column(String)
     game_mode = Column(Integer)
+    total_moves = Column(Integer)
     played_at = Column(DateTime, default=datetime.utcnow)
     moves = Column(JSON)
 
     def __repr__(self):
-        return f"<MoveHistory(id={self.id}, name={self.name}, game_type={self.game_type}, ...)>"
+        return str(vars(self))
 
 
 class GameDatabaseInterface:

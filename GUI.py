@@ -1,7 +1,8 @@
 import pygame
 import sys
-import math
+import time
 import constants
+import json
 
 # Initialize Pygame
 pygame.init()
@@ -16,6 +17,11 @@ def get_coords(mouse_pos):
 class NineMensMorrisGUI:
     def __init__(self, game):
         # Initialize Pygame window
+        self.replay_game = None
+        self.replay_game_moves = None
+        self.replay_game_moves_index = 0
+        self.available_game_ids = None
+        self.show_load_menu = False
         self.screen = pygame.display.set_mode(
             (constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT)
         )
@@ -23,9 +29,28 @@ class NineMensMorrisGUI:
         self.clock = pygame.time.Clock()
         self.game = game
         self.clicked_point = None
+        self.load_button_rect = pygame.Rect(
+            constants.SCREEN_WIDTH - 150, 10, 120, 40
+        )
+        self.load_button_color = (0, 255, 0)
+        self.load_button_text = "Load Game"
 
     def draw_board(self):
         self.screen.fill((255, 255, 255))
+
+        pygame.draw.rect(
+            self.screen, self.load_button_color, self.load_button_rect
+        )
+        myfont = pygame.font.SysFont("Comic Sans MS", 20)
+        load_label = myfont.render(self.load_button_text, 1, constants.BLACK)
+        self.screen.blit(
+            load_label,
+            (
+                self.load_button_rect.x + 10,
+                self.load_button_rect.y + 10,
+            ),
+        )
+
         for x in range(len(constants.LINES)):
             pygame.draw.line(
                 self.screen,
@@ -100,6 +125,23 @@ class NineMensMorrisGUI:
         )
 
     def handle_events(self):
+        if self.replay_game and self.replay_game_moves_index < len(self.replay_game_moves):
+            print(self.replay_game_moves[self.replay_game_moves_index])
+            move = self.replay_game_moves[self.replay_game_moves_index]
+            move_type = move['type']
+
+            if move_type == constants.PLACE_PIECE:
+                self.game.place_piece(move['row'], move['col'], move['player'])
+            elif move_type == constants.MOVE_PIECE:
+                self.game.move_piece(move['row'], move['col'], move['new_row'], move['new_col'], move['player'])
+            elif move_type == constants.REMOVE_PIECE:
+                self.game.remove_piece(move['row'], move['col'], move['player'])
+            elif move_type == constants.FLY_PIECE:
+                self.game.fly_piece(move['row'], move['col'], move['new_row'], move['new_col'], move['player'])
+
+            self.replay_game_moves_index = self.replay_game_moves_index + 1
+            time.sleep(1)
+
         if (
             self.game.game_mode == constants.H_VS_C
             and self.game.turn == constants.PLAY2
@@ -127,12 +169,24 @@ class NineMensMorrisGUI:
                             self.game.is_remove_piece = False
 
         (r, c) = get_coords(pygame.mouse.get_pos())
+
+        if self.show_load_menu:
+            game_id = self.show_game_selection_menu()
+            if game_id is not None:
+                self.replay_game_moves_index = 0
+                self.show_load_menu = not self.show_load_menu
+                moves = json.loads(game_id.moves)
+                self.replay_game_moves = moves
+                self.replay_game = True
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.game.save_game()
                 pygame.quit()
                 sys.exit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
+                if self.load_button_rect.collidepoint(pygame.mouse.get_pos()):
+                    self.show_load_menu = not self.show_load_menu
                 if self.game.over:
                     return
                 if self.game.phase == constants.PHASE1:
@@ -218,6 +272,34 @@ class NineMensMorrisGUI:
         pygame.draw.circle(
             self.screen, highlight_color, (int(x), int(y)), highlight_radius
         )
+
+    def show_game_selection_menu(self):
+        # Placeholder for showing a menu to select a game from the database
+        myfont = pygame.font.SysFont("Comic Sans MS", 24)
+
+        # Query the database to get available game IDs
+        self.available_game_ids = self.game.db.get_moves()
+
+        # Display a list of game IDs
+        for i, game_id in enumerate(self.available_game_ids):
+            text = myfont.render(f"{game_id.name} {game_id.played_at}", 1, constants.BLACK)
+            y_position = 100 + i * 30
+            self.screen.blit(text, (constants.SCREEN_WIDTH - 200, y_position))
+
+        # Check if the user clicked on a game ID
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                for i, game_id in enumerate(self.available_game_ids):
+                    y_position = 100 + i * 30
+                    if (
+                        constants.SCREEN_WIDTH - 200
+                        < pygame.mouse.get_pos()[0]
+                        < constants.SCREEN_WIDTH
+                        and y_position < pygame.mouse.get_pos()[1] < y_position + 30
+                    ):
+                        return game_id
+
+        return None
 
     def main_loop(self):
         while True:
