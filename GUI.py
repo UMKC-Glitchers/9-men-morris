@@ -30,10 +30,13 @@ class NineMensMorrisGUI:
         self.game = game
         self.clicked_point = None
         self.load_button_rect = pygame.Rect(
-            constants.SCREEN_WIDTH - 150, 10, 120, 40
+            constants.SCREEN_WIDTH - 180, 10, 120, 40
         )
         self.load_button_color = (0, 255, 0)
         self.load_button_text = "Load Game"
+        self.stop_button_rect = pygame.Rect(
+            constants.SCREEN_WIDTH - 180, 80, 120, 40
+        )
 
     def draw_board(self):
         self.screen.fill((255, 255, 255))
@@ -41,7 +44,7 @@ class NineMensMorrisGUI:
         pygame.draw.rect(
             self.screen, self.load_button_color, self.load_button_rect
         )
-        myfont = pygame.font.SysFont("Comic Sans MS", 20)
+        myfont = pygame.font.SysFont("Comic Sans MS", 24)
         load_label = myfont.render(self.load_button_text, 1, constants.BLACK)
         self.screen.blit(
             load_label,
@@ -128,6 +131,19 @@ class NineMensMorrisGUI:
         if self.replay_game and self.replay_game_moves_index < len(self.replay_game_moves):
             time.sleep(1)
 
+            pygame.draw.rect(
+                self.screen, self.load_button_color, self.stop_button_rect
+            )
+            myfont = pygame.font.SysFont("Comic Sans MS", 24)
+            load_label = myfont.render("Stop Game", 1, constants.BLACK)
+            self.screen.blit(
+                load_label,
+                (
+                    self.stop_button_rect.x + 10,
+                    self.stop_button_rect.y + 10,
+                ),
+            )
+
             print(self.replay_game_moves[self.replay_game_moves_index])
             move = self.replay_game_moves[self.replay_game_moves_index]
             # move_type = move['type']
@@ -200,6 +216,9 @@ class NineMensMorrisGUI:
                 pygame.quit()
                 sys.exit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
+                if self.stop_button_rect.collidepoint(pygame.mouse.get_pos()):
+                    self.replay_game = False
+                    self.replay_game_moves_index = 0
                 if self.load_button_rect.collidepoint(pygame.mouse.get_pos()):
                     self.show_load_menu = not self.show_load_menu
                 if self.game.over:
