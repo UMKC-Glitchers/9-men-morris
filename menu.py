@@ -12,7 +12,7 @@ class Menu:
         self.screen = pygame.display.set_mode(
             (constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT)
         )
-        pygame.display.set_caption("Nine Men's Morris - Menu")
+        pygame.display.set_caption("Men's Morris - Menu")
         self.clock = pygame.time.Clock()
         self.selected_option = None
         self.font = pygame.font.Font(None, 36)
