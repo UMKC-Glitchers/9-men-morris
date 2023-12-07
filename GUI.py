@@ -17,11 +17,13 @@ def get_coords(mouse_pos):
 class NineMensMorrisGUI:
     def __init__(self, game):
         # Initialize Pygame window
+        self.replay_stop_at_one_move = None
         self.replay_game = None
         self.replay_game_moves = None
         self.replay_game_moves_index = 0
         self.available_game_ids = None
         self.show_load_menu = False
+        self.replay_stopped = False
         self.screen = pygame.display.set_mode(
             (constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT)
         )
@@ -37,9 +39,29 @@ class NineMensMorrisGUI:
         self.stop_button_rect = pygame.Rect(
             constants.SCREEN_WIDTH - 180, 80, 120, 40
         )
+        self.next_button_rect = pygame.Rect(
+            constants.SCREEN_WIDTH - 180, 150, 120, 40
+        )
+        self.next_button_color = (0, 255, 0)
+        self.next_button_text = "Next Move"
 
     def draw_board(self):
         self.screen.fill((255, 255, 255))
+
+        if self.replay_stopped:
+            myfont = pygame.font.SysFont("Comic Sans MS", 24)
+
+            pygame.draw.rect(
+                self.screen, self.next_button_color, self.next_button_rect
+            )
+            next_label = myfont.render(self.next_button_text, 1, constants.BLACK)
+            self.screen.blit(
+                next_label,
+                (
+                    self.next_button_rect.x + 10,
+                    self.next_button_rect.y + 10,
+                ),
+            )
 
         pygame.draw.rect(
             self.screen, self.load_button_color, self.load_button_rect
@@ -146,21 +168,27 @@ class NineMensMorrisGUI:
 
             print(self.replay_game_moves[self.replay_game_moves_index])
             move = self.replay_game_moves[self.replay_game_moves_index]
-            # move_type = move['type']
+            move_type = move['type']
 
             if self.game.phase == constants.PHASE1:
                 self.game.make_move(move['row'], move['col'], None, None)
-            elif self.game.phase == constants.PHASE2:
+            elif self.game.phase == constants.PHASE2: # and move_type != constants.REMOVE_PIECE:
                 self.game.make_move(move['row'], move['col'], move['new_row'], move['new_col'])
+            # elif move_type == constants.REMOVE_PIECE:
+            #     self.game.is_remove_piece = True
 
             if self.game.is_remove_piece:
                 self.replay_game_moves_index = self.replay_game_moves_index + 1
                 move = self.replay_game_moves[self.replay_game_moves_index]
+                print(self.replay_game_moves[self.replay_game_moves_index])
                 player = self.game.get_turn()
                 self.game.remove_piece(move['row'], move['col'], player)
                 self.game.is_remove_piece = False
 
-            self.replay_game_moves_index = self.replay_game_moves_index + 1
+            if not self.replay_stop_at_one_move:
+                self.replay_game_moves_index = self.replay_game_moves_index + 1
+            else:
+                self.replay_game = False
 
         if (
             self.game.game_mode == constants.H_VS_C
@@ -218,9 +246,16 @@ class NineMensMorrisGUI:
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if self.stop_button_rect.collidepoint(pygame.mouse.get_pos()):
                     self.replay_game = False
-                    self.replay_game_moves_index = 0
+                    self.replay_stopped = True
                 if self.load_button_rect.collidepoint(pygame.mouse.get_pos()):
                     self.show_load_menu = not self.show_load_menu
+                    self.replay_stop_at_one_move = False
+                    self.replay_game_moves_index = 0
+                if self.next_button_rect.collidepoint(pygame.mouse.get_pos()):
+                    self.replay_game_moves_index = self.replay_game_moves_index + 1
+                    self.replay_game = True
+                    self.replay_stop_at_one_move = True
+
                 if self.game.over:
                     return
                 if self.game.phase == constants.PHASE1:

@@ -212,6 +212,8 @@ class NineMensMorrisGame:
             if not (
                 0 <= row < constants.ROWS
                 and 0 <= col < constants.COLS
+                # and new_row is not None
+                # and new_col is not None
                 and 0 <= new_row < constants.ROWS
                 and 0 <= new_col < constants.COLS
             ):
