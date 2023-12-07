@@ -14,15 +14,15 @@ if __name__ == "__main__":
     database_interface = GameDatabaseInterface()
 
     if selected_option == constants.H_VS_H:
-        game = NineMensMorrisGame(database_interface)
+        game = NineMensMorrisGame(database_interface, constants.TOTAL_MENS, constants.VALID_POSITIONS)
         game.game_mode = constants.H_VS_H
     elif selected_option == constants.H_VS_C:
         # Initialize game for human vs computer mode
-        game = NineMensMorrisGame(database_interface)  # Replace with your computer player logic
+        game = NineMensMorrisGame(database_interface, constants.TOTAL_MENS, constants.VALID_POSITIONS)  # Replace with your computer player logic
         game.game_mode = constants.H_VS_C
     elif selected_option == constants.SIX_MEN_MORRIS:
         # game = SixMenMorrisGame()
-        game = NineMensMorrisGame(database_interface)
+        game = NineMensMorrisGame(database_interface, constants.TOTAL_SIX_MENS, constants.VALID_POSITIONS_SIX_MENS)
 
     if game is not None:
         if selected_option == constants.SIX_MEN_MORRIS:

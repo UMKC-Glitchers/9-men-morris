@@ -150,7 +150,7 @@ class NineMensMorrisGUI:
         )
 
         player1_pieces = myfont.render(
-            "P1:" + str(abs(self.game.play1_counter - constants.TOTAL_MENS)),
+            "P1:" + str(abs(self.game.play1_counter - self.game.total_mens)),
             1,
             constants.BLACK,
             )
@@ -159,7 +159,7 @@ class NineMensMorrisGUI:
         )
 
         player2_pieces = myfont.render(
-            "P2:" + str(abs(self.game.play2_counter - constants.TOTAL_MENS)),
+            "P2:" + str(abs(self.game.play2_counter - self.game.total_mens)),
             1,
             constants.BLACK,
             )

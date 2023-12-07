@@ -7,14 +7,15 @@ from datetime import datetime
 
 
 class NineMensMorrisGame:
-    def __init__(self, db_interface):
+    def __init__(self, db_interface, pieces, valid_positions):
         self.phase = constants.PHASE1
         self.turn = constants.PLAY1
         self.CURRENT_POSITION = constants.CURRENT_POSITION
+        self.VALID_POSITIONS = valid_positions
         self.is_remove_piece = False
         self.counter = 0
-        self.play1_pieces = constants.TOTAL_MENS
-        self.play2_pieces = constants.TOTAL_MENS
+        self.play1_pieces = pieces
+        self.play2_pieces = pieces
         self.play1_counter = 0
         self.play2_counter = 0
         self.message = constants.PLAYER1_MESSAGE
@@ -24,6 +25,7 @@ class NineMensMorrisGame:
         self.db = db_interface
         self.game_mode = ""
         self.start_time = datetime.now()
+        self.total_mens = pieces
 
     def update_pieces(self):
         if self.turn == constants.PLAY1:
@@ -43,8 +45,8 @@ class NineMensMorrisGame:
                 self.message = constants.PLAYER1_MESSAGE
 
             if (
-                self.play1_counter == constants.TOTAL_MENS
-                and self.play2_counter == constants.TOTAL_MENS
+                self.play1_counter == self.total_mens
+                and self.play2_counter == self.total_mens
             ):
                 self.set_phase(constants.PHASE2)
                 self.message = (
@@ -234,7 +236,7 @@ class NineMensMorrisGame:
                             col_index += 1
                             while col_index <= new_col:
                                 if (
-                                    constants.VALID_POSITIONS[row][col_index]
+                                    self.VALID_POSITIONS[row][col_index]
                                     == constants.VALID
                                     and self.CURRENT_POSITION[row][col_index]
                                     == constants.BLANK
@@ -242,7 +244,7 @@ class NineMensMorrisGame:
                                 ):
                                     return True
                                 elif (
-                                    constants.VALID_POSITIONS[row][col_index] == 0
+                                    self.VALID_POSITIONS[row][col_index] == 0
                                     and row != 3
                                 ):
                                     col_index += 1
@@ -252,7 +254,7 @@ class NineMensMorrisGame:
                             col_index -= 1
                             while col_index >= new_col:
                                 if (
-                                    constants.VALID_POSITIONS[row][col_index]
+                                    self.VALID_POSITIONS[row][col_index]
                                     == constants.VALID
                                     and self.CURRENT_POSITION[row][col_index]
                                     == constants.BLANK
@@ -260,7 +262,7 @@ class NineMensMorrisGame:
                                 ):
                                     return True
                                 elif (
-                                    constants.VALID_POSITIONS[row][col_index] == 0
+                                    self.VALID_POSITIONS[row][col_index] == 0
                                     and row != 3
                                 ):
                                     col_index -= 1
@@ -272,7 +274,7 @@ class NineMensMorrisGame:
                             row_index += 1
                             while row_index <= new_row:
                                 if (
-                                    constants.VALID_POSITIONS[row_index][col]
+                                    self.VALID_POSITIONS[row_index][col]
                                     == constants.VALID
                                     and self.CURRENT_POSITION[row_index][col]
                                     == constants.BLANK
@@ -280,7 +282,7 @@ class NineMensMorrisGame:
                                 ):
                                     return True
                                 elif (
-                                    constants.VALID_POSITIONS[row_index][col] == 0
+                                    self.VALID_POSITIONS[row_index][col] == 0
                                     and col != 3
                                 ):
                                     row_index += 1
@@ -290,7 +292,7 @@ class NineMensMorrisGame:
                             row_index -= 1
                             while row_index >= new_row:
                                 if (
-                                    constants.VALID_POSITIONS[row_index][col]
+                                    self.VALID_POSITIONS[row_index][col]
                                     == constants.VALID
                                     and self.CURRENT_POSITION[row_index][col]
                                     == constants.BLANK
@@ -298,7 +300,7 @@ class NineMensMorrisGame:
                                 ):
                                     return True
                                 elif (
-                                    constants.VALID_POSITIONS[row_index][col] == 0
+                                    self.VALID_POSITIONS[row_index][col] == 0
                                     and col != 3
                                 ):
                                     row_index -= 1
@@ -311,7 +313,7 @@ class NineMensMorrisGame:
         moves = []
         for r in range(constants.ROWS):
             for c in range(constants.COLS):
-                if (int(constants.VALID_POSITIONS[r][c]) == constants.VALID) and (
+                if (int(self.VALID_POSITIONS[r][c]) == constants.VALID) and (
                     int(self.CURRENT_POSITION[r][c]) == constants.BLANK
                 ):
                     moves.append([r, c])
@@ -412,13 +414,13 @@ class NineMensMorrisGame:
 
         while col_index < constants.COLS:
             if (
-                constants.VALID_POSITIONS[row][col_index] == constants.VALID
+                self.VALID_POSITIONS[row][col_index] == constants.VALID
                 and self.CURRENT_POSITION[row][col_index] == player
             ):
                 piece_count += 1
             elif (
-                constants.VALID_POSITIONS[row][col_index] == constants.VALID
-                and constants.VALID_POSITIONS[row][col_index] != player
+                self.VALID_POSITIONS[row][col_index] == constants.VALID
+                and self.VALID_POSITIONS[row][col_index] != player
             ):
                 piece_count = 0
             if row == 3 and col_index == 3:
@@ -433,13 +435,13 @@ class NineMensMorrisGame:
         piece_count = 0
         while row_index < constants.ROWS:
             if (
-                constants.VALID_POSITIONS[row_index][col] == constants.VALID
+                self.VALID_POSITIONS[row_index][col] == constants.VALID
                 and self.CURRENT_POSITION[row_index][col] == player
             ):
                 piece_count += 1
             elif (
-                constants.VALID_POSITIONS[row_index][col] == constants.VALID
-                and constants.VALID_POSITIONS[row_index][col] != player
+                self.VALID_POSITIONS[row_index][col] == constants.VALID
+                and self.VALID_POSITIONS[row_index][col] != player
             ):
                 piece_count = 0
             if row_index == 3 and col == 3:

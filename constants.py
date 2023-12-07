@@ -46,6 +46,38 @@ LINES = [
     [2.5, 4.5, 2.5, 2.5],
 ]
 
+
+# Valid positions on the board
+VALID_POSITIONS_SIX_MENS = [
+    # 0  1  2  3  4  5  6  7
+    [0, 0, 0, 0, 0, 0, 0, 0],  # 0
+    [0, 3, 0, 3, 0, 3, 0, 0],  # 1
+    [0, 0, 3, 3, 3, 0, 0, 0],  # 2
+    [0, 3, 3, 0, 3, 3, 0, 0],  # 3
+    [0, 0, 3, 3, 3, 0, 0, 0],  # 4
+    [0, 3, 0, 3, 0, 3, 0, 0],  # 5
+    [0, 0, 0, 0, 0, 0, 0, 0],  # 6
+    [0, 0, 0, 0, 0, 0, 0, 0],  # 7
+]
+
+LINES_SIX_MEN = [
+    # plus sign pattern
+    [3.5, 1.5, 3.5, 2.5],
+    [1.5, 3.5, 2.5, 3.5],
+    [3.5, 4.5, 3.5, 5.5],
+    [4.5, 3.5, 5.5, 3.5],
+    # middle square
+    [1.5, 1.5, 5.5, 1.5],
+    [5.5, 1.5, 5.5, 5.5],
+    [5.5, 5.5, 1.5, 5.5],
+    [1.5, 5.5, 1.5, 1.5],
+    # small square
+    [2.5, 2.5, 4.5, 2.5],
+    [4.5, 2.5, 4.5, 4.5],
+    [4.5, 4.5, 2.5, 4.5],
+    [2.5, 4.5, 2.5, 2.5],
+]
+
 # Board status
 BLANK = 0
 PLAY1 = 1
@@ -79,6 +111,7 @@ YELLOW = (255, 255, 0)
 
 SQUARESIZE = 80
 TOTAL_MENS = 9
+TOTAL_SIX_MENS = 6
 
 PLAYER1_MESSAGE = "Player 1 (Red) turn to place piece"
 PLAYER2_MESSAGE = "Player 2 (Blue) turn to place piece"
