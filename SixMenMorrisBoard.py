@@ -1,6 +1,3 @@
-import json
-import time
-
 import pygame
 import sys
 import constants

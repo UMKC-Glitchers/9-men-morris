@@ -1,4 +1,5 @@
 import json
+import os
 import uuid
 
 import constants
@@ -325,11 +326,11 @@ class NineMensMorrisGame:
         if len(self.moves_made) == 0:
             return
 
-        # if os.path.exists(constants.GAME_STATE_FILE):
-        #     os.remove(constants.GAME_STATE_FILE)
-        #
-        # with open(constants.GAME_STATE_FILE, "w") as json_file:
-        #     json.dump(self.moves_made, json_file, indent=2)
+        if os.path.exists(constants.GAME_STATE_FILE):
+            os.remove(constants.GAME_STATE_FILE)
+
+        with open(constants.GAME_STATE_FILE, "w") as json_file:
+            json.dump(self.moves_made, json_file, indent=2)
 
         print ("Storing moves in DB...")
 

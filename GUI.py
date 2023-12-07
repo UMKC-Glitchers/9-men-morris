@@ -188,17 +188,17 @@ class NineMensMorrisGUI:
             move = self.replay_game_moves[self.replay_game_moves_index]
             move_type = move['type']
 
-            if self.game.phase == constants.PHASE1:
+            if move_type == constants.REMOVE_PIECE:
+                self.game.is_remove_piece = True
+            elif self.game.phase == constants.PHASE1:
                 self.game.make_move(move['row'], move['col'], None, None)
-            elif self.game.phase == constants.PHASE2: # and move_type != constants.REMOVE_PIECE:
+            elif self.game.phase == constants.PHASE2 and move_type != constants.REMOVE_PIECE:
                 self.game.make_move(move['row'], move['col'], move['new_row'], move['new_col'])
-            # elif move_type == constants.REMOVE_PIECE:
-            #     self.game.is_remove_piece = True
 
-            if self.game.is_remove_piece:
-                self.replay_game_moves_index = self.replay_game_moves_index + 1
+            if self.game.is_remove_piece:  # and self.replay_game_moves_index + 1 < len(self.replay_game_moves):
+                print("removing")
+                # self.replay_game_moves_index = self.replay_game_moves_index + 1
                 move = self.replay_game_moves[self.replay_game_moves_index]
-                print(self.replay_game_moves[self.replay_game_moves_index])
                 player = self.game.get_turn()
                 self.game.remove_piece(move['row'], move['col'], player)
                 self.game.is_remove_piece = False
@@ -213,6 +213,7 @@ class NineMensMorrisGUI:
             and self.game.turn == constants.PLAY2
         ):
             move = self.game.computer_make_move()
+            print("turn:", self.game.get_turn())
             if move:
                 if self.game.phase == constants.PHASE1:
                     self.game.make_move(move[0], move[1], None, None)
@@ -223,18 +224,22 @@ class NineMensMorrisGUI:
                     new_row = move[2]
                     new_col = move[3]
 
+                print("turn after make move:", self.game.get_turn())
+
                 # Check for mill formation only if new_row and new_col are not None
                 if new_row is not None and new_col is not None:
                     if self.game.is_mill(new_row, new_col, self.game.turn):
                         piece_to_remove = self.game.select_piece_to_remove()
                         print("piece to remove", piece_to_remove)
                         if piece_to_remove:
+                            player = self.game.get_turn()
                             self.game.remove_piece(
                                 *piece_to_remove, self.game.get_turn()
                             )
+                            print("here:", player)
                             move_history = {
                                 "type": constants.REMOVE_PIECE,
-                                "player": self.game.get_turn(),
+                                "player": player,
                                 "move": self.game.get_move(new_row, new_col),
                                 "row": new_row,
                                 "col": new_col,
