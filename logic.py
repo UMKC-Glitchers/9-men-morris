@@ -1,12 +1,14 @@
 import json
 import os
+import uuid
 
 import constants
 import random
+from datetime import datetime
 
 
 class NineMensMorrisGame:
-    def __init__(self):
+    def __init__(self, db_interface):
         self.phase = constants.PHASE1
         self.turn = constants.PLAY1
         self.CURRENT_POSITION = constants.CURRENT_POSITION
@@ -20,6 +22,9 @@ class NineMensMorrisGame:
         self.move_made = ""
         self.over = False
         self.moves_made = []  # TODO - Make it a stack, Will be useful when using undo
+        self.db = db_interface
+        self.game_mode = ""
+        self.start_time = datetime.now()
 
     def update_pieces(self):
         if self.turn == constants.PLAY1:
@@ -118,6 +123,17 @@ class NineMensMorrisGame:
                         + constants.REMOVE_PIECE_MESSAGE
                     )
                     self.is_remove_piece = True
+                    move_history = {
+                        "type": move_type,
+                        "player": player,
+                        "move": move,
+                        "row": row,
+                        "col": col,
+                        "new_move": new_move,
+                        "new_row": new_row,
+                        "new_col": new_col,
+                    }
+                    self.save_move(move_history)
                     return
                 move_type = constants.PLACE_PIECE
                 self.change_turn()
@@ -132,6 +148,17 @@ class NineMensMorrisGame:
                             + constants.REMOVE_PIECE_MESSAGE
                         )
                         self.is_remove_piece = True
+                        move_history = {
+                            "type": move_type,
+                            "player": player,
+                            "move": move,
+                            "row": row,
+                            "col": col,
+                            "new_move": new_move,
+                            "new_row": new_row,
+                            "new_col": new_col,
+                        }
+                        self.save_move(move_history)
                         return
                 else:
                     move_type = constants.MOVE_PIECE
@@ -144,6 +171,17 @@ class NineMensMorrisGame:
                             + constants.REMOVE_PIECE_MESSAGE
                         )
                         self.is_remove_piece = True
+                        move_history = {
+                            "type": move_type,
+                            "player": player,
+                            "move": move,
+                            "row": row,
+                            "col": col,
+                            "new_move": new_move,
+                            "new_row": new_row,
+                            "new_col": new_col,
+                        }
+                        self.save_move(move_history)
                         return
                 self.change_turn()
             elif self.phase == constants.PHASE3:
@@ -174,6 +212,8 @@ class NineMensMorrisGame:
             if not (
                 0 <= row < constants.ROWS
                 and 0 <= col < constants.COLS
+                # and new_row is not None
+                # and new_col is not None
                 and 0 <= new_row < constants.ROWS
                 and 0 <= new_col < constants.COLS
             ):
@@ -279,13 +319,41 @@ class NineMensMorrisGame:
         return moves
 
     def save_game(self):
-        print("Saving moves:", self.moves_made)
+        # print("Saving moves:", self.moves_made)
 
-        if os.path.exists(constants.GAME_STATE_FILE):
-            os.remove(constants.GAME_STATE_FILE)
+        if len(self.moves_made) == 0:
+            return
 
-        with open(constants.GAME_STATE_FILE, "w") as json_file:
-            json.dump(self.moves_made, json_file, indent=2)
+        # if os.path.exists(constants.GAME_STATE_FILE):
+        #     os.remove(constants.GAME_STATE_FILE)
+        #
+        # with open(constants.GAME_STATE_FILE, "w") as json_file:
+        #     json.dump(self.moves_made, json_file, indent=2)
+
+        print ("Storing moves in DB...")
+
+        moves_json = json.dumps(self.moves_made, indent=2)
+        print (moves_json)
+
+        # Generate a random UUID
+        new_uuid = uuid.uuid4()
+
+        # Convert the UUID to a string if needed
+        uuid_string = str(new_uuid)
+
+        moves_to_store = [{
+            "id": uuid_string,
+            "name": "test",  # Update this
+            "game_type": "9 mens",  # Update this
+            "total_moves": len(self.moves_made),
+            "game_mode": self.game_mode,
+            "played_at":  self.start_time.utcnow(),
+            "moves": moves_json,
+        }]
+
+        self.db.save_moves(moves_to_store)
+
+        print ("Stored moves in DB")
 
     def is_game_over(self):
         # Game is finished when a player loses
@@ -303,7 +371,7 @@ class NineMensMorrisGame:
             return True
         return False
 
-    # Fixme - Player can remove from a mill if no other pieces are available
+    # Fixme - Player can remove from a mill if no other pieces are available (doesn't work for more than one mill and no free piece)
     def remove_piece(self, row, col, player):
         print("Removing piece:", row, col, player)
         if (
