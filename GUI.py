@@ -196,12 +196,9 @@ class NineMensMorrisGUI:
                 for c in range(constants.COLS):
                     self.game.CURRENT_POSITION[r][c] = 0
 
-            print(self.game.CURRENT_POSITION)
             self.draw_board()
 
-            print(self.replay_game_moves_index)
             for index in range(self.replay_game_moves_index):
-                print(self.game.CURRENT_POSITION)
                 move = self.replay_game_moves[index]
                 move_type = move['type']
 
