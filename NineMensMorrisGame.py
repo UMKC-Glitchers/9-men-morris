@@ -349,7 +349,7 @@ class NineMensMorrisGame:
             "game_type": "9 mens",  # Update this
             "total_moves": len(self.moves_made),
             "game_mode": self.game_mode,
-            "played_at":  self.start_time.utcnow(),
+            "played_at":  self.start_time.now(),
             "moves": moves_json,
         }]
 
