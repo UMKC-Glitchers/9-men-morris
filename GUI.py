@@ -45,12 +45,18 @@ class NineMensMorrisGUI:
         self.next_button_color = (0, 255, 0)
         self.next_button_text = "Next Move"
 
+        self.quit_button_rect = pygame.Rect(
+            constants.SCREEN_WIDTH - 180, constants.SCREEN_HEIGHT - 60, 120, 40
+        )
+        self.quit_button_color = (255, 0, 0)
+        self.quit_button_text = "Quit"
+
     def draw_board(self):
         self.screen.fill((255, 255, 255))
 
-        if self.replay_stopped:
-            myfont = pygame.font.SysFont("Comic Sans MS", 24)
+        myfont = pygame.font.SysFont("Comic Sans MS", 24)
 
+        if self.replay_stopped:
             pygame.draw.rect(
                 self.screen, self.next_button_color, self.next_button_rect
             )
@@ -62,6 +68,18 @@ class NineMensMorrisGUI:
                     self.next_button_rect.y + 10,
                 ),
             )
+
+        pygame.draw.rect(
+            self.screen, self.quit_button_color, self.quit_button_rect
+        )
+        quit_label = myfont.render(self.quit_button_text, 1, constants.BLACK)
+        self.screen.blit(
+            quit_label,
+            (
+                self.quit_button_rect.x + 10,
+                self.quit_button_rect.y + 10,
+            ),
+        )
 
         pygame.draw.rect(
             self.screen, self.load_button_color, self.load_button_rect
@@ -135,7 +153,7 @@ class NineMensMorrisGUI:
             "P1:" + str(abs(self.game.play1_counter - constants.TOTAL_MENS)),
             1,
             constants.BLACK,
-        )
+            )
         self.screen.blit(
             player1_pieces, (7.5 * constants.SQUARESIZE, 0.5 * constants.SQUARESIZE)
         )
@@ -144,7 +162,7 @@ class NineMensMorrisGUI:
             "P2:" + str(abs(self.game.play2_counter - constants.TOTAL_MENS)),
             1,
             constants.BLACK,
-        )
+            )
         self.screen.blit(
             player2_pieces, (7.5 * constants.SQUARESIZE, 0.8 * constants.SQUARESIZE)
         )
@@ -244,6 +262,10 @@ class NineMensMorrisGUI:
                 pygame.quit()
                 sys.exit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
+                if self.quit_button_rect.collidepoint(pygame.mouse.get_pos()):
+                    self.game.save_game()
+                    pygame.quit()
+                    sys.exit()
                 if self.stop_button_rect.collidepoint(pygame.mouse.get_pos()):
                     self.replay_game = False
                     self.replay_stopped = True
