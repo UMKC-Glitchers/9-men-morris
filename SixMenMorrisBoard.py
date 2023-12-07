@@ -120,6 +120,48 @@ class SixMenMorrisBoard:
         )
 
     def handle_events(self):
+        if (
+                self.game.game_mode == constants.H_VS_C
+                and self.game.turn == constants.PLAY2
+        ):
+            move = self.game.computer_make_move()
+            print("turn:", self.game.get_turn())
+            if move:
+                if self.game.phase == constants.PHASE1:
+                    self.game.make_move(move[0], move[1], None, None)
+                    new_row = move[0]
+                    new_col = move[1]
+                elif self.game.phase == constants.PHASE2:
+                    self.game.make_move(move[0], move[1], move[2], move[3])
+                    new_row = move[2]
+                    new_col = move[3]
+
+                print("turn after make move:", self.game.get_turn())
+
+                # Check for mill formation only if new_row and new_col are not None
+                if new_row is not None and new_col is not None:
+                    if self.game.is_mill(new_row, new_col, self.game.turn):
+                        piece_to_remove = self.game.select_piece_to_remove()
+                        print("piece to remove", piece_to_remove)
+                        if piece_to_remove:
+                            player = self.game.get_turn()
+                            self.game.remove_piece(
+                                *piece_to_remove, self.game.get_turn()
+                            )
+                            print("here:", player)
+                            move_history = {
+                                "type": constants.REMOVE_PIECE,
+                                "player": player,
+                                "move": self.game.get_move(new_row, new_col),
+                                "row": new_row,
+                                "col": new_col,
+                                "new_move": None,
+                                "new_row": None,
+                                "new_col": None,
+                            }
+                            self.game.save_move(move_history)
+                            self.game.is_remove_piece = False
+
         (r, c) = get_coords(pygame.mouse.get_pos())
 
         for event in pygame.event.get():
