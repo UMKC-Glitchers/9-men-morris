@@ -84,7 +84,7 @@ class NineMensMorrisGUI:
         pygame.draw.rect(
             self.screen, self.load_button_color, self.load_button_rect
         )
-        myfont = pygame.font.SysFont("Comic Sans MS", 24)
+        myfont = pygame.font.SysFont("Comic Sans MS", 20)
         load_label = myfont.render(self.load_button_text, 1, constants.BLACK)
         self.screen.blit(
             load_label,
@@ -384,6 +384,10 @@ class NineMensMorrisGUI:
 
         # Check if the user clicked on a game ID
         for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                self.game.save_game()
+                pygame.quit()
+                sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 for i, game_id in enumerate(self.available_game_ids):
                     y_position = 100 + i * 30
