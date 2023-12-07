@@ -12,7 +12,7 @@ class GameTypeMenu:
         self.screen = pygame.display.set_mode(
             (constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT)
         )
-        pygame.display.set_caption("Nine Men's Morris - Game Type")
+        pygame.display.set_caption("Nine/Six Men's Morris - Game Type")
         self.clock = pygame.time.Clock()
         self.selected_option = None
         self.font = pygame.font.Font(None, 36)
@@ -36,7 +36,7 @@ class GameTypeMenu:
             self.screen.blit(background_image, (-200, -200))
 
             text = self.font.render(
-                "Nine Men's Morris - Select Game Type", True, constants.BLACK
+                "Nine/Six Men's Morris - Select Game Type", True, constants.BLACK
             )
             text_rect = text.get_rect(center=(constants.SCREEN_WIDTH / 2, 100))
             self.screen.blit(text, text_rect)
