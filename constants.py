@@ -136,3 +136,4 @@ REMOVE_PIECE = "remove_piece"
 FLY_PIECE = "fly_piece"
 
 SIX_MEN_MORRIS = "six_men_morris"
+NINE_MEN_MORRIS = "nine_men_morris"
