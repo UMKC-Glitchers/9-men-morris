@@ -3,7 +3,6 @@ from GUI import NineMensMorrisGUI
 from logic import NineMensMorrisGame
 from menu import Menu
 from db import GameDatabaseInterface
-from SixMenMorrisGame import SixMenMorrisGame
 from SixMenMorrisBoard import SixMenMorrisBoard
 
 
@@ -23,7 +22,7 @@ if __name__ == "__main__":
         game.game_mode = constants.H_VS_C
     elif selected_option == constants.SIX_MEN_MORRIS:
         # game = SixMenMorrisGame()
-        game = NineMensMorrisGame()
+        game = NineMensMorrisGame(database_interface)
 
     if game is not None:
         if selected_option == constants.SIX_MEN_MORRIS:
