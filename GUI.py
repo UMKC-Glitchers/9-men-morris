@@ -4,6 +4,8 @@ import time
 import constants
 import json
 
+from NineMensMorrisGame import NineMensMorrisGame
+
 # Initialize Pygame
 pygame.init()
 
@@ -17,6 +19,7 @@ def get_coords(mouse_pos):
 class NineMensMorrisGUI:
     def __init__(self, game):
         # Initialize Pygame window
+        self.replay_prev = None
         self.replay_stop_at_one_move = None
         self.replay_game = None
         self.replay_game_moves = None
@@ -45,6 +48,12 @@ class NineMensMorrisGUI:
         self.next_button_color = (0, 255, 0)
         self.next_button_text = "Next Move"
 
+        self.prev_button_rect = pygame.Rect(
+            constants.SCREEN_WIDTH - 180, 200, 120, 40
+        )
+        self.prev_button_color = (0, 255, 0)
+        self.prev_button_text = "Prev Move"
+
         self.quit_button_rect = pygame.Rect(
             constants.SCREEN_WIDTH - 180, constants.SCREEN_HEIGHT - 60, 120, 40
         )
@@ -66,6 +75,17 @@ class NineMensMorrisGUI:
                 (
                     self.next_button_rect.x + 10,
                     self.next_button_rect.y + 10,
+                ),
+            )
+            pygame.draw.rect(
+                self.screen, self.prev_button_color, self.prev_button_rect
+            )
+            next_label = myfont.render(self.prev_button_text, 1, constants.BLACK)
+            self.screen.blit(
+                next_label,
+                (
+                    self.prev_button_rect.x + 10,
+                    self.prev_button_rect.y + 10,
                 ),
             )
 
@@ -168,14 +188,47 @@ class NineMensMorrisGUI:
         )
 
     def handle_events(self):
+        if self.replay_game and self.replay_prev and self.replay_game_moves_index > 0:
+            new_game = NineMensMorrisGame(self.game.db, self.game.total_mens, self.game.VALID_POSITIONS)
+            self.game = new_game
+
+            for r in range(constants.ROWS):
+                for c in range(constants.COLS):
+                    self.game.CURRENT_POSITION[r][c] = 0
+
+            print(self.game.CURRENT_POSITION)
+            self.draw_board()
+
+            print(self.replay_game_moves_index)
+            for index in range(self.replay_game_moves_index):
+                print(self.game.CURRENT_POSITION)
+                move = self.replay_game_moves[index]
+                move_type = move['type']
+
+                if move_type == constants.REMOVE_PIECE:
+                    self.game.is_remove_piece = True
+                elif self.game.phase == constants.PHASE1:
+                    self.game.make_move(move['row'], move['col'], None, None)
+                elif self.game.phase == constants.PHASE2 and move_type != constants.REMOVE_PIECE:
+                    self.game.make_move(move['row'], move['col'], move['new_row'], move['new_col'])
+
+                if self.game.is_remove_piece:  # and self.replay_game_moves_index + 1 < len(self.replay_game_moves):
+                    print("removing")
+                    # self.replay_game_moves_index = self.replay_game_moves_index + 1
+                    move = self.replay_game_moves[self.replay_game_moves_index]
+                    player = self.game.get_turn()
+                    self.game.remove_piece(move['row'], move['col'], player)
+                    self.game.is_remove_piece = False
+            self.replay_prev = False
+
         if self.replay_game and self.replay_game_moves_index < len(self.replay_game_moves):
             time.sleep(1)
 
             pygame.draw.rect(
                 self.screen, self.load_button_color, self.stop_button_rect
             )
-            myfont = pygame.font.SysFont("Comic Sans MS", 24)
-            load_label = myfont.render("Stop Game", 1, constants.BLACK)
+            myfont = pygame.font.SysFont("Comic Sans MS", 20)
+            load_label = myfont.render("Pause Game", 1, constants.BLACK)
             self.screen.blit(
                 load_label,
                 (
@@ -207,6 +260,9 @@ class NineMensMorrisGUI:
                 self.replay_game_moves_index = self.replay_game_moves_index + 1
             else:
                 self.replay_game = False
+
+            if self.replay_game_moves_index == len(self.replay_game_moves):
+                print("moves exhausted")
 
         if (
             self.game.game_mode == constants.H_VS_C
@@ -282,6 +338,11 @@ class NineMensMorrisGUI:
                     self.replay_game_moves_index = self.replay_game_moves_index + 1
                     self.replay_game = True
                     self.replay_stop_at_one_move = True
+                if self.prev_button_rect.collidepoint(pygame.mouse.get_pos()):
+                    self.replay_game_moves_index = self.replay_game_moves_index - 1
+                    self.replay_game = True
+                    self.replay_stop_at_one_move = True
+                    self.replay_prev = True
 
                 if self.game.over:
                     return
