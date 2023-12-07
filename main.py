@@ -1,6 +1,6 @@
 import constants
 from GUI import NineMensMorrisGUI
-from logic import NineMensMorrisGame
+from NineMensMorrisGame import NineMensMorrisGame
 from menu import Menu
 from db import GameDatabaseInterface
 from SixMenMorrisBoard import SixMenMorrisBoard

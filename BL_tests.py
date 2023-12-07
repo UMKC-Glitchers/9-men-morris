@@ -1,7 +1,7 @@
 import unittest
 import constants
 
-from logic import NineMensMorrisGame
+from NineMensMorrisGame import NineMensMorrisGame
 
 
 class TestNineMensMorrisGame(unittest.TestCase):
