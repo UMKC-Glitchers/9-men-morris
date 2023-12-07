@@ -9,8 +9,6 @@ class Menu:
         self.human_vs_computer_button = None
         self.human_vs_human_button_rect = None
         self.human_vs_human_button = None
-        self.six_men_morris_button_rect = None
-        self.six_men_morris_button = None
         self.screen = pygame.display.set_mode(
             (constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT)
         )
@@ -31,8 +29,6 @@ class Menu:
                     elif self.human_vs_computer_button_rect.collidepoint(event.pos):
                         # self.selected_option = None
                         self.selected_option = constants.H_VS_C
-                    elif self.six_men_morris_button_rect.collidepoint(event.pos):
-                        self.selected_option = constants.SIX_MEN_MORRIS
 
             self.screen.fill(constants.WHITE)
 
@@ -58,15 +54,6 @@ class Menu:
             text_hvc = self.font.render("Human vs Computer", True, constants.BLACK)
             self.screen.blit(text_hvc, (175, 280))
             self.human_vs_computer_button_rect = self.human_vs_computer_button
-
-            self.six_men_morris_button = pygame.draw.rect(
-                self.screen, constants.GRAY, (150, 340, 280, 50)
-            )
-            text_6_men_morris = self.font.render(
-                "6-Men Morris Variant", True, constants.BLACK
-            )
-            self.screen.blit(text_6_men_morris, (155, 350))
-            self.six_men_morris_button_rect = self.six_men_morris_button
 
             pygame.display.flip()
             self.clock.tick(30)
